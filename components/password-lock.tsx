@@ -5,8 +5,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Lock, LockOpen } from "lucide-react"
-import ReflectiveCard from "./reflective-card"
-import "./reflective-card.css"
 
 export function PasswordLock({ children }: { children: React.ReactNode }) {
   const [isUnlocked, setIsUnlocked] = useState(false)
@@ -41,23 +39,6 @@ export function PasswordLock({ children }: { children: React.ReactNode }) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-black/50 backdrop-blur-md" />
-
-        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <div style={{ height: "600px", width: "400px", position: "relative" }}>
-            <ReflectiveCard
-              overlayColor="rgba(0, 0, 0, 0.2)"
-              blurStrength={10}
-              glassDistortion={15}
-              metalness={0.8}
-              roughness={0.5}
-              displacementStrength={25}
-              noiseScale={1.5}
-              specularConstant={2.0}
-              grayscale={0.5}
-              color="#ffffff"
-            />
-          </div>
-        </div>
 
         <div className="relative z-10 w-full max-w-sm px-6 py-12 flex flex-col items-center justify-center">
           <div className="mb-8 relative">
