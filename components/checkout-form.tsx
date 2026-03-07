@@ -425,33 +425,35 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
               )}
             </section>
 
-            {/* Shirt size */}
-            <section>
-              <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
-                2. Tamanho da camiseta
-              </h2>
-              <div className="flex gap-3 flex-wrap">
-                {SHIRT_SIZES.map((size) => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setShirtSize(size)}
-                    className={`w-14 h-14 rounded-lg border text-sm font-medium transition-all ${
-                      shirtSize === size
-                        ? "border-[#ff4f2d] bg-[#ff4f2d]/10 text-white"
-                        : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </section>
+            {/* Shirt size — only for semestral/anual */}
+            {plan.type === "installment" && (
+              <section>
+                <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+                  2. Tamanho da camiseta
+                </h2>
+                <div className="flex gap-3 flex-wrap">
+                  {SHIRT_SIZES.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setShirtSize(size)}
+                      className={`w-14 h-14 rounded-lg border text-sm font-medium transition-all ${
+                        shirtSize === size
+                          ? "border-[#ff4f2d] bg-[#ff4f2d]/10 text-white"
+                          : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Contact info */}
             <section>
               <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
-                3. Seus dados
+                {plan.type === "installment" ? "3" : "2"}. Seus dados
               </h2>
               <div className="space-y-3">
                 <input
@@ -493,7 +495,7 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
             {/* Address */}
             <section>
               <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
-                4. Endereco
+                {plan.type === "installment" ? "4" : "3"}. Endereco
               </h2>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
@@ -539,7 +541,7 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
             {/* Card */}
             <section>
               <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
-                5. Cartao de credito
+                {plan.type === "installment" ? "5" : "4"}. Cartao de credito
               </h2>
               <div className="space-y-3">
                 <input
@@ -669,7 +671,7 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
             {/* Submit */}
             <button
               type="submit"
-              disabled={isLoading || !professor || !shirtSize || !customerData.street || !customerData.addressNumber}
+              disabled={isLoading || !professor || (plan.type === "installment" && !shirtSize) || !customerData.street || !customerData.addressNumber}
               className="w-full py-4 bg-[#ff4f2d] hover:bg-[#e6452a] disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
             >
               {isLoading ? (
