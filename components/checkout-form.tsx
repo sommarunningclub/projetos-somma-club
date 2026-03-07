@@ -294,25 +294,6 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
             <p className="text-white/50">Sua assinatura do Plano {plan.name} foi ativada com sucesso.</p>
           </div>
 
-          {/* Próximos passos */}
-          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 mb-8">
-            <h2 className="text-sm font-medium text-white mb-6 uppercase tracking-wider">Próximos passos</h2>
-            <div className="space-y-4">
-              {[
-                "Verifique seu e-mail com as instruções de acesso",
-                "Nossa equipe entrará em contato em até 24h para o onboarding",
-                "Baixe o app e configure seu perfil de corredor",
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#ff4f2d]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs text-[#ff4f2d] font-semibold">{i + 1}</span>
-                  </div>
-                  <p className="text-sm text-white/60 pt-0.5">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Kit Assessoria */}
           <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 mb-8">
             <h2 className="text-sm font-medium text-white mb-6 uppercase tracking-wider">Kit Assessoria Somma</h2>
