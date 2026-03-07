@@ -196,6 +196,11 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
     setPageState("processing")
 
     try {
+      // 0. Get client IP
+      const ipRes = await fetch("/api/client-ip")
+      const ipData = await ipRes.json()
+      const clientIp = ipData.ip || "0.0.0.0"
+
       // 1. Create customer
       const customerRes = await fetch("/api/asaas/customer", {
         method: "POST",
@@ -225,7 +230,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
           addressNumber: customerData.addressNumber,
           phone: customerData.phone.replace(/\D/g, ""),
         },
-        remoteIp: "127.0.0.1",
+        remoteIp: clientIp,
       }
 
       if (plan.type === "recurring") {
