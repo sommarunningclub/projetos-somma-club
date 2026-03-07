@@ -63,9 +63,15 @@ export default async function CheckoutPage({
   }
 
   const supabase = await createClient()
-  const { data: professors } = await supabase
+  const { data: professors, error } = await supabase
     .from("professores_curriculo_assessoria")
     .select("id, nome, instagram, link_foto")
+
+  if (error) {
+    console.error("[CheckoutPage] Supabase error:", error)
+  }
+
+  console.log("[CheckoutPage] Loaded professors:", professors?.length ?? 0)
 
   return (
     <main className="bg-black">
