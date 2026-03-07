@@ -63,20 +63,20 @@ export default async function CheckoutPage({
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  if (!supabaseUrl || !serviceRoleKey) {
-    console.error("[CheckoutPage] Missing env vars:", { supabaseUrl: !!supabaseUrl, serviceRoleKey: !!serviceRoleKey })
+  if (!supabaseUrl || !anonKey) {
+    console.error("[CheckoutPage] Missing env vars:", { supabaseUrl: !!supabaseUrl, anonKey: !!anonKey })
     return (
       <main className="bg-black">
         <div className="min-h-screen flex items-center justify-center text-red-400">
-          <p>Configuracao ausente: SUPABASE_SERVICE_ROLE_KEY</p>
+          <p>Configuracao ausente: NEXT_PUBLIC_SUPABASE_ANON_KEY</p>
         </div>
       </main>
     )
   }
 
-  const supabase = createAnonClient(supabaseUrl, serviceRoleKey)
+  const supabase = createAnonClient(supabaseUrl, anonKey)
   const { data: professors, error } = await supabase
     .from("professores_curriculo_assessoria")
     .select("id, nome, instagram, link_foto")
