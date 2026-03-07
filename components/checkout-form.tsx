@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   CreditCard,
   Loader2,
@@ -75,11 +75,12 @@ interface CouponData {
   }
 }
 
-const PROFESSORS = [
-  { id: "alexandre", name: "Alexandre Alves" },
-  { id: "mateus", name: "Mateus Fonseca" },
-  { id: "joseph", name: "Joseph Pereira" },
-]
+interface Professor {
+  id: string
+  nome: string
+  instagram: string
+  link_foto: string
+}
 
 const SHIRT_SIZES = ["P", "M", "G", "GG", "XG"]
 
@@ -117,8 +118,16 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
   const [isCepLoading, setIsCepLoading] = useState(false)
   const [cepError, setCepError] = useState<string | null>(null)
 
+  const [professors, setProfessors] = useState<Professor[]>([])
   const [professor, setProfessor] = useState("")
   const [shirtSize, setShirtSize] = useState("")
+
+  useEffect(() => {
+    fetch("/api/professores")
+      .then((res) => res.json())
+      .then((data) => { if (Array.isArray(data)) setProfessors(data) })
+      .catch(() => {})
+  }, [])
 
   const [couponCode, setCouponCode] = useState("")
   const [couponData, setCouponData] = useState<CouponData | null>(null)
@@ -367,22 +376,53 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
               <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
                 1. Selecione seu professor
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {PROFESSORS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => setProfessor(p.name)}
-                    className={`py-4 px-4 rounded-lg border text-sm font-medium transition-all ${
-                      professor === p.name
-                        ? "border-[#ff4f2d] bg-[#ff4f2d]/10 text-white"
-                        : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20"
-                    }`}
-                  >
-                    {p.name}
-                  </button>
-                ))}
-              </div>
+              {professors.length === 0 ? (
+                <div className="flex items-center gap-2 text-white/30 text-sm py-4">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Carregando professores...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {professors.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setProfessor(p.nome)}
+                      className={`rounded-xl border overflow-hidden transition-all ${
+                        professor === p.nome
+                          ? "border-[#ff4f2d] ring-1 ring-[#ff4f2d]"
+                          : "border-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      <div className="relative aspect-square w-full">
+                        <Image
+                          src={p.link_foto}
+                          alt={p.nome}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, 33vw"
+                        />
+                        {professor === p.nome && (
+                          <div className="absolute top-2 right-2 w-6 h-6 bg-[#ff4f2d] rounded-full flex items-center justify-center">
+                            <Check className="w-3.5 h-3.5 text-black" strokeWidth={3} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3 bg-white/[0.02]">
+                        <p className="text-sm font-medium text-white">{p.nome}</p>
+                        <a
+                          href={p.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-[#ff4f2d] hover:underline mt-0.5 inline-block"
+                        >
+                          @{p.instagram.split("/").filter(Boolean).pop()}
+                        </a>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Shirt size */}
