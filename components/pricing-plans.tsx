@@ -4,10 +4,9 @@ import Link from "next/link"
 import { Check } from "lucide-react"
 
 const benefits = [
-  { category: "Comunidade", items: ["Presença VIP nas provas Somma", "Estrutura Somma em eventos", "Encontros mensais exclusivos", "Corridas temáticas", "Palestras e experiências"] },
-  { category: "Parcerias", items: ["Descontos em Track&Field", "Descontos em Tex Barbearia", "Descontos em Dopahmina", "Descontos em Academia Evolve", "Descontos em Bugu Delícias", "Descontos em marcas de suplementos"] },
+  { category: "Comunidade", items: ["Presença VIP nas provas Somma", "Estrutura Somma em eventos", "Encontros mensais exclusivos", "Palestras e experiências"] },
+  { category: "Parcerias", items: ["Descontos em Tex Barbearia", "Descontos em Dopahmina", "Descontos em Academia Evolve"] },
   { category: "Exclusivos", items: ["Treinamento personalizado via app", "Integração com Strava e relógios GPS", "Acompanhamento de métricas", "Camiseta oficial de membro", "Desconto em camisetas extras"] },
-  { category: "Sorteios", items: ["Sorteios mensais com prêmios especiais"] },
 ]
 
 const pricingPlans = [
