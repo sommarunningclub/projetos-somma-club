@@ -81,6 +81,7 @@ interface Professor {
   nome: string
   instagram: string
   link_foto: string
+  telefone: string
 }
 
 const SHIRT_SIZES = ["P", "M", "G", "GG", "XG"]
@@ -276,34 +277,114 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
   // ─── SUCCESS ─────────────────────────────────────────────────────────────
   if (pageState === "success") {
+    const professorData = professors.find(p => p.nome === professor)
+    const professorPhone = professorData?.telefone || ""
+    const whatsappProfessor = professorPhone ? `https://wa.me/${professorPhone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá, acabei de adiquirir a Assessoria Somma ${plan.name}.`)}` : ""
+    const whatsappConcierge = "https://wa.me/61995372477?text=" + encodeURIComponent("Olá, acabei de adiquirir a assessoria somma e tenho algumas dúvidas, pode me ajudar?")
+
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Check className="w-10 h-10 text-green-400" strokeWidth={1.5} />
+      <div className="min-h-screen bg-black text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          {/* Success banner */}
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Check className="w-10 h-10 text-green-400" strokeWidth={1.5} />
+            </div>
+            <h1 className="text-3xl font-light text-white mb-2">Bem-vindo a Somma!</h1>
+            <p className="text-white/50">Sua assinatura do Plano {plan.name} foi ativada com sucesso.</p>
           </div>
-          <h2 className="text-2xl font-light text-white mb-2">Bem-vindo a Somma!</h2>
-          <p className="text-white/50 mb-8 text-sm">
-            Sua assinatura do Plano {plan.name} foi ativada com sucesso.
-          </p>
-          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 text-left mb-8 space-y-4">
-            <p className="text-sm font-medium text-white">Proximos passos</p>
-            {[
-              "Verifique seu e-mail com as instrucoes de acesso",
-              "Nossa equipe entrara em contato em ate 24h para o onboarding",
-              "Baixe o app e configure seu perfil de corredor",
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#ff4f2d]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-[10px] text-[#ff4f2d] font-semibold">{i + 1}</span>
+
+          {/* Próximos passos */}
+          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 mb-8">
+            <h2 className="text-sm font-medium text-white mb-6 uppercase tracking-wider">Próximos passos</h2>
+            <div className="space-y-4">
+              {[
+                "Verifique seu e-mail com as instruções de acesso",
+                "Nossa equipe entrará em contato em até 24h para o onboarding",
+                "Baixe o app e configure seu perfil de corredor",
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#ff4f2d]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs text-[#ff4f2d] font-semibold">{i + 1}</span>
+                  </div>
+                  <p className="text-sm text-white/60 pt-0.5">{item}</p>
                 </div>
-                <p className="text-sm text-white/60">{item}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          {/* Kit Assessoria */}
+          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 mb-8">
+            <h2 className="text-sm font-medium text-white mb-6 uppercase tracking-wider">Kit Assessoria Somma</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <a
+                href="https://loja.sommaclub.com.br/products/kit-assessoria-somma-club"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 border border-white/10 rounded-xl hover:border-[#ff4f2d]/50 hover:bg-white/[0.02] transition-all group"
+              >
+                <p className="text-xs text-white/50 mb-2 group-hover:text-white/70">KIT COMPLETO</p>
+                <p className="text-sm font-medium text-white mb-2">Ecobag + Camisa</p>
+                <p className="text-xs text-white/40 line-through mb-1">De R$ 125,00</p>
+                <p className="text-lg font-semibold text-[#ff4f2d]">por R$ 80,00</p>
+                <p className="text-xs text-white/50 mt-3">Cupom: ALUNOASSESSORIA</p>
+              </a>
+              <a
+                href="https://loja.sommaclub.com.br/products/camisa-assessoria-somma-club"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 border border-white/10 rounded-xl hover:border-[#ff4f2d]/50 hover:bg-white/[0.02] transition-all group"
+              >
+                <p className="text-xs text-white/50 mb-2 group-hover:text-white/70">APENAS CAMISA</p>
+                <p className="text-sm font-medium text-white mb-3">Camisa Assessoria</p>
+                <p className="text-xs text-white/50">Clique para comprar</p>
+              </a>
+            </div>
+          </div>
+
+          {/* Contato - Professor e Concierge */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+            {/* Professor */}
+            {professorData && (
+              <a
+                href={whatsappProfessor}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:border-[#ff4f2d]/50 hover:bg-white/[0.05] transition-all text-center"
+              >
+                <p className="text-xs text-white/50 mb-3 uppercase tracking-wider">Conecte com seu professor</p>
+                <p className="text-sm font-medium text-white mb-4">{professorData.nome}</p>
+                <div className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20BA58] rounded-lg transition-colors w-full">
+                  <svg className="w-4 h-4" fill="white" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.687.733 5.308 2.122 7.618L2.06 23.766l8.25-2.166c2.213 1.201 4.708 1.86 7.332 1.86 5.736 0 10.562-4.652 10.562-10.38 0-2.777-1.132-5.388-3.188-7.36A10.56 10.56 0 0012.051 6.979z" />
+                  </svg>
+                  <span className="text-sm font-semibold">Enviar mensagem</span>
+                </div>
+              </a>
+            )}
+
+            {/* Concierge */}
+            <a
+              href={whatsappConcierge}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:border-[#ff4f2d]/50 hover:bg-white/[0.05] transition-all text-center"
+            >
+              <p className="text-xs text-white/50 mb-3 uppercase tracking-wider">Dúvidas?</p>
+              <p className="text-sm font-medium text-white mb-4">Concierge Somma</p>
+              <div className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20BA58] rounded-lg transition-colors w-full">
+                <svg className="w-4 h-4" fill="white" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.687.733 5.308 2.122 7.618L2.06 23.766l8.25-2.166c2.213 1.201 4.708 1.86 7.332 1.86 5.736 0 10.562-4.652 10.562-10.38 0-2.777-1.132-5.388-3.188-7.36A10.56 10.56 0 0012.051 6.979z" />
+                </svg>
+                <span className="text-sm font-semibold">Fale conosco</span>
+              </div>
+            </a>
+          </div>
+
+          {/* Voltar ao site */}
           <a
             href="/"
-            className="inline-block w-full py-3 bg-white/10 hover:bg-white/15 text-white font-light rounded-xl transition-colors"
+            className="block w-full py-3 text-center bg-white/10 hover:bg-white/15 text-white font-light rounded-xl transition-colors"
           >
             Voltar ao site
           </a>

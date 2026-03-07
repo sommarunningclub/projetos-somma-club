@@ -79,7 +79,7 @@ export default async function CheckoutPage({
   const supabase = createAnonClient(supabaseUrl, anonKey)
   const { data: professors, error } = await supabase
     .from("professores_curriculo_assessoria")
-    .select("id, nome, instagram, link_foto")
+    .select("id, nome, instagram, link_foto, telefone")
 
   if (error) {
     console.error("[CheckoutPage] Supabase error:", JSON.stringify(error))
