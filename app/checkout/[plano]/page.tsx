@@ -64,7 +64,7 @@ export default async function CheckoutPage({
 
   const supabase = createAnonClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
   const { data: professors, error } = await supabase
     .from("professores_curriculo_assessoria")
@@ -72,6 +72,13 @@ export default async function CheckoutPage({
 
   if (error) {
     console.error("[CheckoutPage] Supabase error:", error)
+    return (
+      <main className="bg-black">
+        <div className="min-h-screen flex items-center justify-center text-red-400">
+          <p>Erro ao carregar professores: {error.message}</p>
+        </div>
+      </main>
+    )
   }
 
   console.log("[CheckoutPage] Loaded professors:", professors?.length ?? 0)
