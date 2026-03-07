@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Check } from "lucide-react"
+import { KitCarousel } from "./kit-carousel"
 
 const benefits = [
   { category: "Comunidade", items: ["Presença VIP nas provas Somma", "Estrutura Somma em eventos", "Encontros mensais exclusivos", "Palestras e experiências"] },
@@ -133,17 +133,10 @@ export function PricingPlans() {
               {(idx === 1 || idx === 2) && (
                 <div className="mb-6 space-y-4">
                   <div className="p-4 bg-[#ff4f2d]/10 border border-[#ff4f2d]/30 rounded-lg">
-                    <p className="text-xs font-light text-[#ff4f2d] uppercase tracking-wider mb-2">🎁 Brinde Incluído</p>
+                    <p className="text-xs font-light text-[#ff4f2d] uppercase tracking-wider mb-3">🎁 Brinde Incluído</p>
                     <p className="text-sm text-white font-light mb-3">Kit Assessoria Grátis</p>
-                    <div className="relative h-40 bg-white/[0.02] border border-white/10 rounded-lg overflow-hidden mb-3">
-                      <Image
-                        src="https://cdn.shopify.com/s/files/1/0788/1932/8253/files/4_c03974c2-1a3c-4f6a-8735-05e719ee1323.png?v=1772201099"
-                        alt="Kit Assessoria"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                    <p className="text-xs text-white/70">
+                    <KitCarousel />
+                    <p className="text-xs text-white/70 mt-3">
                       Inclui: <strong>ecobag + camiseta de treino Assessoria</strong>
                     </p>
                   </div>
