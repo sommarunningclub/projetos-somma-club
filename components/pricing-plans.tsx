@@ -118,6 +118,32 @@ export function PricingPlans() {
                 )}
               </div>
 
+              {/* Bonus kit info */}
+              {idx === 0 && (
+                <div className="mb-6 p-3 bg-white/[0.03] border border-white/10 rounded-lg">
+                  <p className="text-xs text-white/60 mb-2">Neste plano, você pode adquirir:</p>
+                  <ul className="space-y-1 text-xs text-white/70">
+                    <li>• Kit Assessoria (ecobag + camiseta)</li>
+                    <li>• Camiseta de treino Assessoria</li>
+                  </ul>
+                </div>
+              )}
+
+              {(idx === 1 || idx === 2) && (
+                <div className="mb-6 space-y-4">
+                  <div className="p-4 bg-[#ff4f2d]/10 border border-[#ff4f2d]/30 rounded-lg">
+                    <p className="text-xs font-light text-[#ff4f2d] uppercase tracking-wider mb-2">🎁 Brinde Incluído</p>
+                    <p className="text-sm text-white font-light mb-3">Kit Assessoria Grátis</p>
+                    <div className="relative h-32 bg-white/[0.02] border border-white/10 rounded-lg flex items-center justify-center mb-3">
+                      <p className="text-xs text-white/40">Espaço para imagem do kit</p>
+                    </div>
+                    <p className="text-xs text-white/70">
+                      Inclui: <strong>ecobag + camiseta de treino Assessoria</strong>
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* CTA Button */}
               <Link
                 href={`/checkout/${plan.period.toLowerCase()}`}
