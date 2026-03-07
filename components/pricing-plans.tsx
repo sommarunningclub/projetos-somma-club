@@ -122,7 +122,7 @@ export function PricingPlans() {
               {/* Bonus kit info */}
               {idx === 0 && (
                 <div className="mb-6 p-3 bg-white/[0.03] border border-white/10 rounded-lg">
-                  <p className="text-xs text-white/60 mb-2">Neste plano, você pode adquirir:</p>
+                  <p className="text-xs text-white/60 mb-2">Neste plano, você pode adquirir a parte:</p>
                   <ul className="space-y-1 text-xs text-white/70">
                     <li>• Kit Assessoria (ecobag + camiseta)</li>
                     <li>• Camiseta de treino Assessoria</li>
