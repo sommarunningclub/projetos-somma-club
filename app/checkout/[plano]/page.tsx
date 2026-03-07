@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { CheckoutForm } from "@/components/checkout-form"
+import { createClient } from "@/lib/supabase/server"
 
 const planData = {
   mensal: {
@@ -61,9 +62,14 @@ export default async function CheckoutPage({
     redirect("/")
   }
 
+  const supabase = await createClient()
+  const { data: professors } = await supabase
+    .from("professores_curriculo_assessoria")
+    .select("id, nome, instagram, link_foto")
+
   return (
     <main className="bg-black">
-      <CheckoutForm plan={plan} />
+      <CheckoutForm plan={plan} initialProfessors={professors || []} />
     </main>
   )
 }

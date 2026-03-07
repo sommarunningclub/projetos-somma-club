@@ -24,6 +24,7 @@ interface Plan {
 
 interface CheckoutFormProps {
   plan: Plan
+  initialProfessors: Professor[]
 }
 
 interface CustomerData {
@@ -111,23 +112,16 @@ function fmtBRL(value: number) {
   return value.toFixed(2).replace(".", ",")
 }
 
-export function CheckoutForm({ plan }: CheckoutFormProps) {
+export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pageState, setPageState] = useState<"form" | "processing" | "success" | "error">("form")
   const [isCepLoading, setIsCepLoading] = useState(false)
   const [cepError, setCepError] = useState<string | null>(null)
 
-  const [professors, setProfessors] = useState<Professor[]>([])
+  const [professors, setProfessors] = useState<Professor[]>(initialProfessors)
   const [professor, setProfessor] = useState("")
   const [shirtSize, setShirtSize] = useState("")
-
-  useEffect(() => {
-    fetch("/api/professores")
-      .then((res) => res.json())
-      .then((data) => { if (Array.isArray(data)) setProfessors(data) })
-      .catch(() => {})
-  }, [])
 
   const [couponCode, setCouponCode] = useState("")
   const [couponData, setCouponData] = useState<CouponData | null>(null)
