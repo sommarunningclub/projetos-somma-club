@@ -62,26 +62,40 @@ export default async function CheckoutPage({
     redirect("/")
   }
 
-  const supabase = createAnonClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-  const { data: professors, error } = await supabase
-    .from("professores_curriculo_assessoria")
-    .select("id, nome, instagram, link_foto")
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-  if (error) {
-    console.error("[CheckoutPage] Supabase error:", error)
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error("[CheckoutPage] Missing env vars:", { supabaseUrl: !!supabaseUrl, serviceRoleKey: !!serviceRoleKey })
     return (
       <main className="bg-black">
         <div className="min-h-screen flex items-center justify-center text-red-400">
-          <p>Erro ao carregar professores: {error.message}</p>
+          <p>Configuracao ausente: SUPABASE_SERVICE_ROLE_KEY</p>
         </div>
       </main>
     )
   }
 
-  console.log("[CheckoutPage] Loaded professors:", professors?.length ?? 0)
+  const supabase = createAnonClient(supabaseUrl, serviceRoleKey)
+  const { data: professors, error } = await supabase
+    .from("professores_curriculo_assessoria")
+    .select("id, nome, instagram, link_foto")
+
+  if (error) {
+    console.error("[CheckoutPage] Supabase error:", JSON.stringify(error))
+    return (
+      <main className="bg-black">
+        <div className="min-h-screen flex items-center justify-center text-red-400">
+          <div className="text-center">
+            <p className="mb-2">Erro ao carregar professores:</p>
+            <p className="text-sm font-mono">{JSON.stringify(error)}</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  console.log("[CheckoutPage] Loaded professors:", professors?.length ?? 0, professors)
 
   return (
     <main className="bg-black">
