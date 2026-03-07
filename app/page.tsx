@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { PricingPlans } from "@/components/pricing-plans"
 import { Navbar } from "@/components/navbar"
 import Link from "next/link"
@@ -133,7 +132,14 @@ export default function Home() {
                   Querendo alcançar novos objetivos e melhorar performance com acompanhamento técnico de nível profissional.
                 </p>
               </div>
-              <div className="h-64 md:h-80 bg-white/5 border border-white/10 rounded-sm" />
+              <div className="relative h-72 md:h-96 border border-white/10 rounded-sm overflow-hidden">
+                <Image
+                  src="https://cdn.shopify.com/s/files/1/0788/1932/8253/files/Design_sem_nome_28.png?v=1772914791"
+                  alt="Atletas Experientes"
+                  fill
+                  className="object-cover object-center"
+                />
+              </div>
             </div>
 
             {/* Item 03 */}
@@ -145,7 +151,14 @@ export default function Home() {
                   Fazendo parte de um movimento que leva a corrida a sério, com networking, amizades e transformação pessoal.
                 </p>
               </div>
-              <div className="h-64 md:h-80 bg-white/5 border border-white/10 rounded-sm" />
+              <div className="relative h-72 md:h-96 border border-white/10 rounded-sm overflow-hidden">
+                <Image
+                  src="https://cdn.shopify.com/s/files/1/0788/1932/8253/files/Design_sem_nome_29.png?v=1772915059"
+                  alt="Comunidade"
+                  fill
+                  className="object-cover object-center"
+                />
+              </div>
             </div>
           </div>
         </div>
