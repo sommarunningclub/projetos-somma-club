@@ -3,114 +3,111 @@ import { type NextRequest, NextResponse } from "next/server"
 const ASAAS_API_URL = "https://api.asaas.com/v3"
 const ASAAS_API_KEY = process.env.ASAAS_API_KEY
 
+function friendlyError(data: any): string {
+  const code = data.errors?.[0]?.code
+  if (code === "invalid_creditCard" || code === "invalid_creditCardNumber")
+    return "Pagamento não autorizado, verifique seu cartão."
+  if (code === "invalid_creditCardHolderInfo")
+    return "Dados do titular do cartão inválidos."
+  if (code === "invalid_value")
+    return "Valor inválido para o pagamento."
+  return data.errors?.[0]?.description || "Erro ao processar pagamento"
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { customerId, billingType, value, cycle, description, creditCard, creditCardHolderInfo, remoteIp, maxPayments } = body
-
-    // PASSO 1: Criar uma cobrança avulsa imediata (payment one-time)
-    const today = new Date()
-    const formattedToday = today.toISOString().split("T")[0]
-
-    const paymentData = {
-      customer: customerId,
-      billingType,
-      value,
-      dueDate: formattedToday, // Data de hoje para cobrar imediatamente
-      description: `${description} - Cobrança Imediata`,
+    const {
+      customerId,
       creditCard,
       creditCardHolderInfo,
       remoteIp,
+      description,
+      // Plano mensal: recorrência
+      type, // "recurring" | "installment"
+      value,
+      // Plano parcelado
+      installmentCount,
+      installmentValue,
+    } = body
+
+    const today = new Date().toISOString().split("T")[0]
+    const headers = {
+      "Content-Type": "application/json",
+      access_token: ASAAS_API_KEY || "",
     }
 
-    console.log("[v0] Criando cobrança imediata:", { customerId, value })
-
-    const paymentResponse = await fetch(`${ASAAS_API_URL}/payments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        access_token: ASAAS_API_KEY || "",
-      },
-      body: JSON.stringify(paymentData),
-    })
-
-    const paymentData_response = await paymentResponse.json()
-
-    if (!paymentResponse.ok) {
-      console.error("[Asaas] Error creating immediate payment:", paymentData_response)
-      
-      // Tratar erros específicos de cartão de crédito
-      const errorCode = paymentData_response.errors?.[0]?.code
-      let friendlyMessage = "Erro ao processar pagamento"
-      
-      if (errorCode === "invalid_creditCard" || errorCode === "invalid_creditCardNumber") {
-        friendlyMessage = "Pagamento não autorizado, verifique seu cartão."
-      } else if (errorCode === "invalid_creditCardHolderInfo") {
-        friendlyMessage = "Dados do titular do cartão inválidos."
-      } else if (errorCode === "invalid_value") {
-        friendlyMessage = "Valor inválido para o pagamento."
-      } else if (paymentData_response.errors?.[0]?.description) {
-        friendlyMessage = paymentData_response.errors[0].description
-      }
-      
-      return NextResponse.json(
-        { error: friendlyMessage },
-        { status: paymentResponse.status },
-      )
-    }
-
-    console.log("[v0] Cobrança imediata criada com sucesso:", paymentData_response.id)
-
-    // PASSO 2: Se for assinatura recorrente (mais de 1 parcela), criar a assinatura para os próximos ciclos
-    let subscriptionData_response = null
-
-    if (maxPayments && maxPayments > 1) {
-      // Agendar próxima cobrança para 30 dias a partir de hoje
-      const nextDueDate = new Date()
-      nextDueDate.setDate(nextDueDate.getDate() + 30)
-      const formattedNextDueDate = nextDueDate.toISOString().split("T")[0]
-
-      const subscriptionData = {
+    // ─── MENSAL: Assinatura recorrente via /subscriptions ────────────────
+    if (type === "recurring") {
+      const payload = {
         customer: customerId,
-        billingType,
+        billingType: "CREDIT_CARD",
         value,
         cycle: "MONTHLY",
-        description: `${description} - Renovação Automática`,
-        nextDueDate: formattedNextDueDate,
-        maxPayments: maxPayments - 1, // Reduzir em 1 pois já foi cobrado uma vez
+        description,
         creditCard,
         creditCardHolderInfo,
         remoteIp,
       }
 
-      console.log("[v0] Criando assinatura recorrente:", { maxPayments: subscriptionData.maxPayments, nextDueDate: formattedNextDueDate })
+      console.log("[Asaas] Criando assinatura recorrente:", { customerId, value })
 
-      const subscriptionResponse = await fetch(`${ASAAS_API_URL}/subscriptions`, {
+      const res = await fetch(`${ASAAS_API_URL}/subscriptions`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          access_token: ASAAS_API_KEY || "",
-        },
-        body: JSON.stringify(subscriptionData),
+        headers,
+        body: JSON.stringify(payload),
       })
 
-      subscriptionData_response = await subscriptionResponse.json()
+      const data = await res.json()
 
-      if (!subscriptionResponse.ok) {
-        console.error("[Asaas] Error creating subscription:", subscriptionData_response)
-        // Não retorna erro aqui pois o pagamento já foi feito
-        // Apenas registra o erro da assinatura
-      } else {
-        console.log("[v0] Assinatura recorrente criada com sucesso:", subscriptionData_response.id)
+      if (!res.ok) {
+        console.error("[Asaas] Erro na assinatura:", data)
+        return NextResponse.json({ error: friendlyError(data) }, { status: res.status })
       }
+
+      console.log("[Asaas] Assinatura criada:", data.id)
+      return NextResponse.json({ subscription: data, message: "Assinatura ativada com sucesso" })
     }
 
-    // Retornar dados da cobrança imediata (principal) + assinatura se houver
-    return NextResponse.json({
-      payment: paymentData_response,
-      subscription: subscriptionData_response,
-      message: "Pagamento processado com sucesso",
-    })
+    // ─── SEMESTRAL / ANUAL: Cobrança parcelada via /payments ────────────
+    if (type === "installment") {
+      const payload = {
+        customer: customerId,
+        billingType: "CREDIT_CARD",
+        installmentCount,
+        installmentValue,
+        dueDate: today,
+        description,
+        creditCard,
+        creditCardHolderInfo,
+        remoteIp,
+      }
+
+      console.log("[Asaas] Criando cobrança parcelada:", {
+        customerId,
+        installmentCount,
+        installmentValue,
+        total: installmentCount * installmentValue,
+      })
+
+      const res = await fetch(`${ASAAS_API_URL}/payments`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        console.error("[Asaas] Erro na cobrança parcelada:", data)
+        return NextResponse.json({ error: friendlyError(data) }, { status: res.status })
+      }
+
+      console.log("[Asaas] Cobrança parcelada criada:", data.id)
+      return NextResponse.json({ payment: data, message: "Pagamento processado com sucesso" })
+    }
+
+    return NextResponse.json({ error: "Tipo de pagamento inválido" }, { status: 400 })
   } catch (error) {
     console.error("[Asaas] Error:", error)
     return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })

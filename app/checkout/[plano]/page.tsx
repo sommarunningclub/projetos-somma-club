@@ -9,6 +9,7 @@ const planData = {
     price: 220,
     total: 220,
     installments: 1,
+    type: "recurring" as const,
   },
   semestral: {
     name: "Semestral",
@@ -16,6 +17,7 @@ const planData = {
     price: 200,
     total: 1200,
     installments: 6,
+    type: "installment" as const,
   },
   anual: {
     name: "Anual",
@@ -23,6 +25,7 @@ const planData = {
     price: 180,
     total: 2160,
     installments: 12,
+    type: "installment" as const,
   },
 }
 
