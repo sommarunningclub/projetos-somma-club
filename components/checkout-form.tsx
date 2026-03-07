@@ -123,6 +123,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
   const [professors, setProfessors] = useState<Professor[]>(initialProfessors)
   const [professor, setProfessor] = useState("")
   const [shirtSize, setShirtSize] = useState("")
+  const [installments, setInstallments] = useState(plan.installments)
 
   const [couponCode, setCouponCode] = useState("")
   const [couponData, setCouponData] = useState<CouponData | null>(null)
@@ -138,9 +139,10 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
     holderName: "", number: "", expiryMonth: "", expiryYear: "", ccv: "",
   })
 
+  const baseTotalForInstallments = plan.type === "installment" ? (plan.total / plan.installments) * installments : plan.total
   const discountedPrice = couponData ? couponData.calculation.finalValue : plan.price
   const discountAmount = couponData ? couponData.calculation.discount : 0
-  const discountedTotal = couponData ? plan.total - discountAmount * plan.installments : plan.total
+  const discountedTotal = couponData ? baseTotalForInstallments - discountAmount * installments : baseTotalForInstallments
 
   // ─── CEP ─────────────────────────────────────────────────────────────────
   const fetchAddressByCep = async (cep: string) => {
@@ -237,7 +239,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
       if (plan.type === "recurring") {
         paymentPayload.value = discountedPrice
       } else {
-        paymentPayload.installmentCount = plan.installments
+        paymentPayload.installmentCount = installments
         paymentPayload.installmentValue = discountedPrice
       }
 
@@ -511,10 +513,33 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
               </section>
             )}
 
+            {/* Installments — only for semestral/anual */}
+            {plan.type === "installment" && (
+              <section>
+                <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
+                  3. Quantidade de parcelas
+                </h2>
+                <select
+                  value={installments}
+                  onChange={(e) => setInstallments(Number(e.target.value))}
+                  className={inputClass + " cursor-pointer"}
+                >
+                  {Array.from({ length: plan.installments }, (_, i) => i + 1).map((num) => {
+                    const installmentValue = plan.total / num
+                    return (
+                      <option key={num} value={num} className="bg-black text-white">
+                        {num}x de R$ {installmentValue.toFixed(2).replace(".", ",")}
+                      </option>
+                    )
+                  })}
+                </select>
+              </section>
+            )}
+
             {/* Contact info */}
             <section>
               <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
-                {plan.type === "installment" ? "3" : "2"}. Seus dados
+                {plan.type === "installment" ? "4" : "2"}. Seus dados
               </h2>
               <div className="space-y-2 sm:space-y-3">
                 <input
@@ -556,7 +581,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
             {/* Address */}
             <section>
               <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
-                {plan.type === "installment" ? "4" : "3"}. Endereco
+                {plan.type === "installment" ? "5" : "3"}. Endereco
               </h2>
               <div className="space-y-2 sm:space-y-3">
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -602,7 +627,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
             {/* Card */}
             <section>
               <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
-                {plan.type === "installment" ? "5" : "4"}. Cartao de credito
+                {plan.type === "installment" ? "6" : "4"}. Cartao de credito
               </h2>
               <div className="space-y-2 sm:space-y-3">
                 <input
