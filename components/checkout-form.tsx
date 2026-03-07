@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   CreditCard,
   Loader2,
@@ -254,7 +254,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
   // ─── Input styles ────────────────────────────────────────────────────────
   const inputClass =
-    "w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#ff4f2d] focus:bg-white/[0.05] transition-all"
+    "w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/[0.03] border border-white/10 rounded-lg text-base sm:text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#ff4f2d] focus:bg-white/[0.05] transition-all"
 
   // ─── PROCESSING ──────────────────────────────────────────────────────────
   if (pageState === "processing") {
