@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { CheckoutForm } from "@/components/checkout-form"
-import { createClient } from "@/lib/supabase/server"
+import { createClient as createAnonClient } from "@supabase/supabase-js"
 
 const planData = {
   mensal: {
@@ -62,7 +62,10 @@ export default async function CheckoutPage({
     redirect("/")
   }
 
-  const supabase = await createClient()
+  const supabase = createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const { data: professors, error } = await supabase
     .from("professores_curriculo_assessoria")
     .select("id, nome, instagram, link_foto")
