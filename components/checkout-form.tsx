@@ -254,7 +254,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
   // ─── Input styles ────────────────────────────────────────────────────────
   const inputClass =
-    "w-full px-4 py-3 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#ff4f2d] focus:bg-white/[0.05] transition-all"
+    "w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#ff4f2d] focus:bg-white/[0.05] transition-all"
 
   // ─── PROCESSING ──────────────────────────────────────────────────────────
   if (pageState === "processing") {
@@ -359,15 +359,15 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-16">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 sm:gap-8 lg:gap-16">
 
           {/* ── LEFT: Form ──────────────────────────────────────────────── */}
-          <form onSubmit={handleSubmit} className="space-y-10">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 lg:space-y-10">
 
             {/* Professor */}
             <section>
-              <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+              <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
                 1. Selecione seu professor
               </h2>
               {professors.length === 0 ? (
@@ -375,7 +375,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                   <Loader2 className="w-4 h-4 animate-spin" /> Carregando professores...
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                   {professors.map((p) => (
                     <button
                       key={p.id}
@@ -422,7 +422,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
             {/* Shirt size — only for semestral/anual */}
             {plan.type === "installment" && (
               <section>
-                <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+                <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
                   2. Tamanho da camiseta
                 </h2>
                 <div className="flex gap-3 flex-wrap">
@@ -446,10 +446,10 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
             {/* Contact info */}
             <section>
-              <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+              <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
                 {plan.type === "installment" ? "3" : "2"}. Seus dados
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text" required
                   value={customerData.name}
@@ -465,7 +465,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                   className={inputClass}
                   autoComplete="email"
                 />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <input
                     type="text" required
                     value={customerData.cpfCnpj}
@@ -488,11 +488,11 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
             {/* Address */}
             <section>
-              <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+              <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
                 {plan.type === "installment" ? "4" : "3"}. Endereco
               </h2>
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <div className="relative">
                     <input
                       type="text" required
@@ -503,7 +503,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                       inputMode="numeric"
                     />
                     {isCepLoading && (
-                      <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 animate-spin" />
+                      <Loader2 className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 animate-spin" />
                     )}
                   </div>
                   <input
@@ -534,10 +534,10 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
             {/* Card */}
             <section>
-              <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+              <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
                 {plan.type === "installment" ? "5" : "4"}. Cartao de credito
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text" required
                   value={cardData.number}
@@ -553,10 +553,10 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                   value={cardData.holderName}
                   onChange={(e) => setCardData((p) => ({ ...p, holderName: e.target.value.toUpperCase() }))}
                   placeholder="Nome impresso no cartao"
-                  className={`${inputClass} uppercase`}
+                  className={`${inputClass} uppercase text-sm`}
                   autoComplete="cc-name"
                 />
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   <input
                     type="text" required maxLength={2}
                     value={cardData.expiryMonth}
@@ -593,7 +593,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
             {/* Coupon */}
             <section>
-              <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">
+              <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
                 Cupom de desconto
               </h2>
               {couponData ? (
@@ -666,7 +666,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
             <button
               type="submit"
               disabled={isLoading || !professor || (plan.type === "installment" && !shirtSize) || !customerData.street || !customerData.addressNumber}
-              className="w-full py-4 bg-[#ff4f2d] hover:bg-[#e6452a] disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full py-3 sm:py-4 bg-[#ff4f2d] hover:bg-[#e6452a] disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm active:scale-95"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

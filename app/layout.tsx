@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Assessoria Somma Club",
   description: "Treinamento personalizado para corredores com acompanhamento profissional e planejamento individualizado.",
   generator: "Assessoria Somma Club",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   icons: {
     icon: "https://cdn.shopify.com/s/files/1/0788/1932/8253/files/fav_icon_somma.svg?v=1772597575",
   },
