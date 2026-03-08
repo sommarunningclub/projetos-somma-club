@@ -251,6 +251,28 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
       const paymentResult = await paymentRes.json()
       if (!paymentRes.ok) throw new Error(paymentResult.error || "Erro ao processar pagamento")
 
+      // 3. Salvar cliente na tabela de gestão
+      await fetch("/api/supabase/cliente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: customerData.name,
+          email: customerData.email,
+          telefone: customerData.phone,
+          cpf: customerData.cpfCnpj,
+          rua: customerData.street,
+          numero: customerData.addressNumber,
+          bairro: customerData.neighborhood,
+          cidade: customerData.city,
+          cep: customerData.postalCode,
+          estado: customerData.state,
+          veste: shirtSize || null,
+          professor: professor || null,
+          tipo_plano: plan.name,
+          valor: discountedPrice,
+        }),
+      })
+
       setPageState("success")
     } catch (err: any) {
       setError(err.message)
