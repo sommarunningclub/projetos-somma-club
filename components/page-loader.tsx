@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
 const BG_COLOR = "#000000"
-const ACCENT_COLOR = 0xff4f2d
-const WHITE = 0xffffff
+const ACCENT_COLOR = 0xff2c03
+const WHITE = 0xff2c03
 
 export function PageLoader() {
   const wrapRef = useRef<HTMLDivElement>(null)
