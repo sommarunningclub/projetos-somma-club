@@ -179,7 +179,7 @@ export function SubscriptionForm() {
       <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto px-4 sm:px-6 space-y-4 sm:space-y-6">
         {/* Nome */}
         <div>
-          <label htmlFor="nome" className="block text-xs sm:text-sm font-light text-white mb-2">
+          <label htmlFor="nome" className="block text-xs sm:text-sm font-light text-gray-900 mb-2">
             Nome
           </label>
           <input
@@ -190,13 +190,13 @@ export function SubscriptionForm() {
             onChange={handleChange}
             required
             placeholder="Seu nome completo"
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-950 border border-zinc-800 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-[#ff4f2d] focus:ring-1 focus:ring-[#ff4f2d] transition-all"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#ff4f2d] focus:ring-1 focus:ring-[#ff4f2d] transition-all"
           />
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-xs sm:text-sm font-light text-white mb-2">
+          <label htmlFor="email" className="block text-xs sm:text-sm font-light text-gray-900 mb-2">
             E-mail
           </label>
           <input
@@ -207,13 +207,13 @@ export function SubscriptionForm() {
             onChange={handleChange}
             required
             placeholder="seu@email.com"
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-950 border border-zinc-800 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-[#ff4f2d] focus:ring-1 focus:ring-[#ff4f2d] transition-all"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#ff4f2d] focus:ring-1 focus:ring-[#ff4f2d] transition-all"
           />
         </div>
 
         {/* WhatsApp */}
         <div>
-          <label htmlFor="whatsapp" className="block text-xs sm:text-sm font-light text-white mb-2">
+          <label htmlFor="whatsapp" className="block text-xs sm:text-sm font-light text-gray-900 mb-2">
             WhatsApp
           </label>
           <input
@@ -236,7 +236,7 @@ export function SubscriptionForm() {
 
         {/* Sexo */}
         <div>
-          <label htmlFor="sexo" className="block text-xs sm:text-sm font-light text-white mb-2">
+          <label htmlFor="sexo" className="block text-xs sm:text-sm font-light text-gray-900 mb-2">
             Sexo
           </label>
           <select
@@ -255,7 +255,7 @@ export function SubscriptionForm() {
 
         {/* Cidade */}
         <div>
-          <label htmlFor="cidade" className="block text-xs sm:text-sm font-light text-white mb-2">
+          <label htmlFor="cidade" className="block text-xs sm:text-sm font-light text-gray-900 mb-2">
             Cidade
           </label>
           <select
