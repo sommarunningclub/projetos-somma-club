@@ -47,7 +47,7 @@ export default function Home() {
                 Explorar Benefícios ↗
               </Link>
               <Link
-                href="#beneficios"
+                href="#planos"
                 className="text-white hover:text-[#ff4f2d] transition-colors text-sm font-light border-b border-white/30 hover:border-[#ff4f2d] pb-2"
               >
                 Escolha seu plano ↓
@@ -226,7 +226,9 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-12">
           <h2 className="text-sm font-light text-white/60 mb-8 uppercase tracking-wider">ASSESSORIA SOMMA</h2>
 
-          <PricingPlans />
+          <div id="planos">
+            <PricingPlans />
+          </div>
         </div>
       </section>
     </main>
