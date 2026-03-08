@@ -46,14 +46,12 @@ export default function Home() {
               >
                 Explorar Benefícios ↗
               </Link>
-              <a
-                href="https://wa.me/5561991780334?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20Assessoria%20Somma."
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="#beneficios"
                 className="text-white hover:text-[#ff4f2d] transition-colors text-sm font-light border-b border-white/30 hover:border-[#ff4f2d] pb-2"
               >
-                Entrar em Contato ↗
-              </a>
+                Escolha seu plano ↓
+              </Link>
             </div>
           </div>
         </div>
