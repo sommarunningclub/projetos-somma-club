@@ -289,11 +289,79 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
   // ─── PROCESSING ──────────────────────────────────────────────────────────
   if (pageState === "processing") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-2 border-white/10 border-t-[#ff4f2d] rounded-full animate-spin mx-auto mb-6" />
-          <h2 className="text-xl font-light text-white mb-2">Processando pagamento</h2>
-          <p className="text-sm text-white/40">Aguarde, estamos confirmando sua assinatura...</p>
+      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <div className="text-center max-w-md w-full">
+          {/* Animated gradient circle */}
+          <div className="relative w-24 h-24 mx-auto mb-12">
+            <div
+              className="absolute inset-0 rounded-full opacity-20"
+              style={{
+                background: "radial-gradient(circle, #ff2c03 0%, transparent 70%)",
+                animation: "pulse 2s ease-in-out infinite",
+              }}
+            />
+            <div
+              className="absolute inset-2 rounded-full border border-[#ff2c03]/30"
+              style={{
+                animation: "spin 3s linear infinite",
+              }}
+            />
+            <div
+              className="absolute inset-4 rounded-full border-t border-[#ff2c03]"
+              style={{
+                animation: "spin 1.5s linear infinite reverse",
+              }}
+            />
+          </div>
+
+          {/* Header */}
+          <h2 className="text-2xl font-light text-white mb-3">Processando pagamento</h2>
+          <p className="text-sm text-white/60 mb-10">Seu pagamento está sendo validado com segurança</p>
+
+          {/* Progress steps */}
+          <div className="space-y-4">
+            {[
+              { label: "Validando dados", delay: "0s" },
+              { label: "Processando cartão", delay: "0.8s" },
+              { label: "Confirmando assinatura", delay: "1.6s" },
+            ].map((step, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div
+                  className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ff2c03]"
+                  style={{
+                    animation: `pulse 1.4s ease-in-out infinite`,
+                    animationDelay: step.delay,
+                  }}
+                />
+                <span className="text-xs text-white/50 flex-grow text-left">{step.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-white/30 mt-10">
+            <Lock className="w-3 h-3 inline mr-1" />
+            Todas as transações são criptografadas
+          </p>
+
+          <style jsx>{`
+            @keyframes spin {
+              from {
+                transform: rotate(0deg);
+              }
+              to {
+                transform: rotate(360deg);
+              }
+            }
+            @keyframes pulse {
+              0%,
+              100% {
+                opacity: 0.3;
+              }
+              50% {
+                opacity: 1;
+              }
+            }
+          `}</style>
         </div>
       </div>
     )
