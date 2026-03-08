@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { LenisProvider } from "@/components/lenis-provider"
 import { Footer } from "@/components/footer"
 import { CookieBanner } from "@/components/cookie-banner"
+import { PageLoader } from "@/components/page-loader"
 import "./globals.css"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
@@ -43,6 +44,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </LenisProvider>
+        <PageLoader />
         <CookieBanner />
         <Analytics />
       </body>
