@@ -19,6 +19,8 @@ export async function POST(request: NextRequest) {
       professor,
       tipo_plano,
       valor,
+      forma_pagamento,
+      status_pagamento,
     } = body
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -50,8 +52,8 @@ export async function POST(request: NextRequest) {
         professor: professor || null,
         tipo_plano,
         valor,
-        forma_pagamento: "Cartão de Crédito",
-        status: "Pago",
+        forma_pagamento: forma_pagamento || "Cartão de Crédito",
+        status: status_pagamento || "Pago",
         data_entrada: today,
         dia_vencimento: diaVencimento,
         contrato_assinado: false,

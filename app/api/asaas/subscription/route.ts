@@ -24,11 +24,13 @@ export async function POST(request: NextRequest) {
       remoteIp,
       description,
       // Plano mensal: recorrência
-      type, // "recurring" | "installment"
+      type, // "recurring" | "installment" | "pix"
       value,
       // Plano parcelado
       installmentCount,
       installmentValue,
+      // PIX à vista
+      pixValue,
     } = body
 
     const today = new Date().toISOString().split("T")[0]
@@ -105,6 +107,35 @@ export async function POST(request: NextRequest) {
 
       console.log("[Asaas] Cobrança parcelada criada:", data.id)
       return NextResponse.json({ payment: data, message: "Pagamento processado com sucesso" })
+    }
+
+    // ─── PIX À VISTA: Cobrança única via /payments ─────────────────────────
+    if (type === "pix") {
+      const payload = {
+        customer: customerId,
+        billingType: "PIX",
+        value: pixValue,
+        dueDate: today,
+        description,
+      }
+
+      console.log("[Asaas] Criando cobrança PIX:", { customerId, pixValue })
+
+      const res = await fetch(`${ASAAS_API_URL}/payments`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        console.error("[Asaas] Erro na cobrança PIX:", data)
+        return NextResponse.json({ error: friendlyError(data) }, { status: res.status })
+      }
+
+      console.log("[Asaas] Cobrança PIX criada:", data.id)
+      return NextResponse.json({ payment: data, message: "Cobrança PIX gerada com sucesso" })
     }
 
     return NextResponse.json({ error: "Tipo de pagamento inválido" }, { status: 400 })

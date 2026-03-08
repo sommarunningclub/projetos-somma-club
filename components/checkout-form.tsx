@@ -10,6 +10,8 @@ import {
   Lock,
   ShieldCheck,
   Tag,
+  QrCode,
+  Copy,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -116,7 +118,7 @@ function fmtBRL(value: number) {
 export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [pageState, setPageState] = useState<"form" | "processing" | "success" | "error">("form")
+  const [pageState, setPageState] = useState<"form" | "processing" | "success" | "error" | "pix">("form")
   const [isCepLoading, setIsCepLoading] = useState(false)
   const [cepError, setCepError] = useState<string | null>(null)
 
@@ -139,10 +141,18 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
     holderName: "", number: "", expiryMonth: "", expiryYear: "", ccv: "",
   })
 
+  // ─── PIX ──────────────────────────────────────────────────────────────────
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "pix">("card")
+  const [pixQrCode, setPixQrCode] = useState<string | null>(null)
+  const [pixPayload, setPixPayload] = useState<string | null>(null)
+  const [pixExpiration, setPixExpiration] = useState<string | null>(null)
+  const [pixCopied, setPixCopied] = useState(false)
+
   const baseTotalForInstallments = plan.type === "installment" ? (plan.total / plan.installments) * installments : plan.total
   const discountedPrice = couponData ? couponData.calculation.finalValue : plan.price
   const discountAmount = couponData ? couponData.calculation.discount : 0
   const discountedTotal = couponData ? baseTotalForInstallments - discountAmount * installments : baseTotalForInstallments
+  const pixTotalValue = couponData ? plan.total - couponData.calculation.discount * plan.installments : plan.total
 
   // ─── CEP ─────────────────────────────────────────────────────────────────
   const fetchAddressByCep = async (cep: string) => {
@@ -199,11 +209,6 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
     setPageState("processing")
 
     try {
-      // 0. Get client IP
-      const ipRes = await fetch("/api/client-ip")
-      const ipData = await ipRes.json()
-      const clientIp = ipData.ip || "0.0.0.0"
-
       // 1. Create customer
       const customerRes = await fetch("/api/asaas/customer", {
         method: "POST",
@@ -213,7 +218,66 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
       const customerResult = await customerRes.json()
       if (!customerRes.ok) throw new Error(customerResult.error || "Erro ao salvar dados")
 
-      // 2. Create payment/subscription
+      // 2a. PIX à vista — novo fluxo
+      if (paymentMethod === "pix" && plan.type === "installment") {
+        const pixPaymentRes = await fetch("/api/asaas/subscription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId: customerResult.id,
+            type: "pix",
+            pixValue: pixTotalValue,
+            description: `Somma Assessoria - Plano ${plan.name} PIX | Prof: ${professor} | Camiseta: ${shirtSize}${couponData ? ` | Cupom: ${couponData.coupon.code}` : ""}`,
+          }),
+        })
+        const pixPaymentResult = await pixPaymentRes.json()
+        if (!pixPaymentRes.ok) throw new Error(pixPaymentResult.error || "Erro ao gerar PIX")
+
+        const paymentId = pixPaymentResult.payment.id
+
+        // Buscar QR Code PIX
+        const pixQrRes = await fetch(`/api/asaas/pix?paymentId=${paymentId}`)
+        const pixQrData = await pixQrRes.json()
+        if (!pixQrRes.ok) throw new Error(pixQrData.error || "Erro ao gerar QR Code PIX")
+
+        setPixQrCode(pixQrData.encodedImage)
+        setPixPayload(pixQrData.payload)
+        setPixExpiration(pixQrData.expirationDate)
+
+        // Salvar no Supabase com status "Aguardando PIX"
+        await fetch("/api/supabase/cliente", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: customerData.name,
+            email: customerData.email,
+            telefone: customerData.phone,
+            cpf: customerData.cpfCnpj,
+            rua: customerData.street,
+            numero: customerData.addressNumber,
+            bairro: customerData.neighborhood,
+            cidade: customerData.city,
+            cep: customerData.postalCode,
+            estado: customerData.state,
+            veste: shirtSize || null,
+            professor: professor || null,
+            tipo_plano: plan.name,
+            valor: pixTotalValue,
+            forma_pagamento: "PIX",
+            status_pagamento: "Aguardando PIX",
+          }),
+        })
+
+        setPageState("pix")
+        setIsLoading(false)
+        return
+      }
+
+      // 2b. Cartão — fluxo existente
+      const ipRes = await fetch("/api/client-ip")
+      const ipData = await ipRes.json()
+      const clientIp = ipData.ip || "0.0.0.0"
+
       const paymentPayload: Record<string, unknown> = {
         customerId: customerResult.id,
         type: plan.type,
@@ -251,7 +315,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
       const paymentResult = await paymentRes.json()
       if (!paymentRes.ok) throw new Error(paymentResult.error || "Erro ao processar pagamento")
 
-      // 3. Salvar cliente na tabela de gestão
+      // Salvar cliente na tabela de gestão
       await fetch("/api/supabase/cliente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -270,6 +334,8 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
           professor: professor || null,
           tipo_plano: plan.name,
           valor: discountedPrice,
+          forma_pagamento: "Cartão de Crédito",
+          status_pagamento: "Pago",
         }),
       })
 
@@ -285,6 +351,122 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
   // ─── Input styles ────────────────────────────────────────────────────────
   const inputClass =
     "w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/[0.03] border border-white/10 rounded-lg text-base sm:text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#ff4f2d] focus:bg-white/[0.05] transition-all"
+
+  // ─── PIX ─────────────────────────────────────────────────────────────────
+  if (pageState === "pix") {
+    const formattedExpiration = pixExpiration
+      ? new Date(pixExpiration).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : null
+
+    const handleCopyPix = async () => {
+      if (!pixPayload) return
+      await navigator.clipboard.writeText(pixPayload)
+      setPixCopied(true)
+      setTimeout(() => setPixCopied(false), 3000)
+    }
+
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-[#32bcad]/10 border border-[#32bcad]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <QrCode className="w-10 h-10 text-[#32bcad]" strokeWidth={1.5} />
+            </div>
+            <h1 className="text-2xl font-light text-white mb-2">Pagamento via PIX</h1>
+            <p className="text-sm text-white/50">
+              Escaneie o QR Code ou copie o código abaixo
+            </p>
+          </div>
+
+          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 space-y-6">
+            {/* QR Code */}
+            {pixQrCode && (
+              <div className="flex justify-center">
+                <div className="bg-white p-3 rounded-xl">
+                  <img
+                    src={`data:image/png;base64,${pixQrCode}`}
+                    alt="QR Code PIX"
+                    width={200}
+                    height={200}
+                    className="block"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Valor e vencimento */}
+            <div className="space-y-2 text-center">
+              <p className="text-3xl font-light text-white">
+                R$ {fmtBRL(pixTotalValue)}
+              </p>
+              <p className="text-xs text-white/40">
+                Plano {plan.name} — pagamento à vista
+              </p>
+              {formattedExpiration && (
+                <p className="text-xs text-white/30">
+                  Válido até {formattedExpiration}
+                </p>
+              )}
+            </div>
+
+            {/* Código copia e cola */}
+            {pixPayload && (
+              <div className="space-y-2">
+                <p className="text-xs text-white/40 text-center">Ou copie o código PIX:</p>
+                <div className="bg-white/[0.05] border border-white/10 rounded-lg px-3 py-2">
+                  <p className="text-xs text-white/50 font-mono break-all leading-relaxed">
+                    {pixPayload}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyPix}
+                  className="w-full py-3 flex items-center justify-center gap-2 bg-[#32bcad]/10 hover:bg-[#32bcad]/20 border border-[#32bcad]/30 text-[#32bcad] font-medium rounded-lg transition-colors"
+                >
+                  {pixCopied ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Código copiado!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      Copiar código PIX
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Aviso de confirmação */}
+            <div className="border-t border-white/10 pt-4">
+              <div className="flex items-start gap-3 text-sm">
+                <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                <p className="text-white/50">
+                  O acesso será liberado automaticamente após a confirmação do pagamento pelo banco.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Voltar */}
+          <a
+            href="/"
+            className="block w-full py-3 text-center bg-white/10 hover:bg-white/15 text-white font-light rounded-xl transition-colors mt-4"
+          >
+            Voltar ao site
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   // ─── PROCESSING ──────────────────────────────────────────────────────────
   if (pageState === "processing") {
@@ -320,11 +502,18 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
 
           {/* Progress steps */}
           <div className="space-y-4">
-            {[
-              { label: "Validando dados", delay: "0s" },
-              { label: "Processando cartão", delay: "0.8s" },
-              { label: "Confirmando assinatura", delay: "1.6s" },
-            ].map((step, i) => (
+            {(paymentMethod === "pix"
+              ? [
+                  { label: "Validando dados", delay: "0s" },
+                  { label: "Gerando cobrança PIX", delay: "0.8s" },
+                  { label: "Criando QR Code", delay: "1.6s" },
+                ]
+              : [
+                  { label: "Validando dados", delay: "0s" },
+                  { label: "Processando cartão", delay: "0.8s" },
+                  { label: "Confirmando assinatura", delay: "1.6s" },
+                ]
+            ).map((step, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div
                   className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ff2c03]"
@@ -594,28 +783,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
               </section>
             )}
 
-            {/* Installments — only for semestral/anual */}
-            {plan.type === "installment" && (
-              <section>
-                <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
-                  3. Quantidade de parcelas
-                </h2>
-                <select
-                  value={installments}
-                  onChange={(e) => setInstallments(Number(e.target.value))}
-                  className={inputClass + " cursor-pointer"}
-                >
-                  {Array.from({ length: plan.installments }, (_, i) => i + 1).map((num) => {
-                    const installmentValue = plan.total / num
-                    return (
-                      <option key={num} value={num} className="bg-black text-white">
-                        {num}x de R$ {installmentValue.toFixed(2).replace(".", ",")}
-                      </option>
-                    )
-                  })}
-                </select>
-              </section>
-            )}
+            {/* Installments — only for cartão parcelado (moved inline with payment method toggle) */}
 
             {/* Contact info */}
             <section>
@@ -705,11 +873,54 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
               </div>
             </section>
 
-            {/* Card */}
-            <section>
-              <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
-                {plan.type === "installment" ? "6" : "4"}. Cartao de credito
-              </h2>
+            {/* Payment Method Toggle — somente planos semestral/anual */}
+            {plan.type === "installment" && (
+              <section>
+                <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
+                  6. Forma de pagamento
+                </h2>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-lg border text-sm font-medium transition-all ${
+                      paymentMethod === "card"
+                        ? "border-[#ff4f2d] bg-[#ff4f2d]/10 text-white"
+                        : "border-white/10 text-white/50 hover:border-white/20"
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Cartão de Crédito
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("pix")}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-lg border text-sm font-medium transition-all ${
+                      paymentMethod === "pix"
+                        ? "border-[#32bcad] bg-[#32bcad]/10 text-[#32bcad]"
+                        : "border-white/10 text-white/50 hover:border-white/20"
+                    }`}
+                  >
+                    <QrCode className="w-4 h-4" />
+                    PIX à Vista
+                  </button>
+                </div>
+                {paymentMethod === "pix" && (
+                  <div className="mt-3 p-3 bg-[#32bcad]/5 border border-[#32bcad]/20 rounded-lg">
+                    <p className="text-xs text-[#32bcad]">
+                      Pagamento único de R$ {fmtBRL(pixTotalValue)} — sem parcelamento
+                    </p>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Card — hidden quando PIX selecionado */}
+            {(plan.type !== "installment" || paymentMethod === "card") && (
+              <section>
+                <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
+                  {plan.type === "installment" ? "7" : "4"}. Cartao de credito
+                </h2>
               <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text" required
@@ -763,6 +974,27 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                 </div>
               </div>
             </section>
+            )}
+
+            {/* Installment selection — somente para cartão parcelado */}
+            {plan.type === "installment" && paymentMethod === "card" && (
+              <section>
+                <h2 className="text-xs sm:text-sm font-medium text-white/50 uppercase tracking-wider mb-3 sm:mb-4">
+                  Quantidade de parcelas
+                </h2>
+                <select
+                  value={installments}
+                  onChange={(e) => setInstallments(parseInt(e.target.value))}
+                  className={inputClass}
+                >
+                  {Array.from({ length: plan.installments }, (_, i) => i + 1).map((n) => (
+                    <option key={n} value={n} className="bg-black text-white">
+                      {n}x de R$ {fmtBRL((plan.total / plan.installments) * n / n)}
+                    </option>
+                  ))}
+                </select>
+              </section>
+            )}
 
             {/* Coupon */}
             <section>
@@ -832,6 +1064,8 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                 discountedPrice={discountedPrice}
                 discountAmount={discountAmount}
                 discountedTotal={discountedTotal}
+                paymentMethod={paymentMethod}
+                pixTotalValue={pixTotalValue}
               />
             </div>
 
@@ -843,13 +1077,20 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
+              ) : paymentMethod === "pix" && plan.type === "installment" ? (
+                <>
+                  <QrCode className="w-4 h-4" />
+                  Pagar via PIX — R$ {fmtBRL(pixTotalValue)}
+                </>
+              ) : plan.type === "recurring" ? (
+                <>
+                  <Lock className="w-4 h-4" />
+                  Assinar por R$ {fmtBRL(discountedPrice)}/mes
+                </>
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  {plan.type === "recurring"
-                    ? `Assinar por R$ ${fmtBRL(discountedPrice)}/mes`
-                    : `Pagar ${plan.installments}x de R$ ${fmtBRL(discountedPrice)}`
-                  }
+                  Pagar {installments}x de R$ {fmtBRL(discountedPrice)}
                 </>
               )}
             </button>
@@ -871,6 +1112,8 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                 discountedPrice={discountedPrice}
                 discountAmount={discountAmount}
                 discountedTotal={discountedTotal}
+                paymentMethod={paymentMethod}
+                pixTotalValue={pixTotalValue}
               />
             </div>
           </div>
@@ -890,6 +1133,8 @@ function OrderSummary({
   discountedPrice,
   discountAmount,
   discountedTotal,
+  paymentMethod,
+  pixTotalValue,
 }: {
   plan: Plan
   professor: string
@@ -898,6 +1143,8 @@ function OrderSummary({
   discountedPrice: number
   discountAmount: number
   discountedTotal: number
+  paymentMethod: "card" | "pix"
+  pixTotalValue: number
 }) {
   return (
     <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 space-y-5">
@@ -907,6 +1154,8 @@ function OrderSummary({
         <p className="text-white/50 text-sm mt-0.5">
           {plan.type === "recurring"
             ? "Cobranca mensal recorrente"
+            : paymentMethod === "pix"
+            ? "PIX à vista — pagamento único"
             : `${plan.installments}x de R$ ${fmtBRL(plan.price)} sem juros`
           }
         </p>
@@ -955,20 +1204,36 @@ function OrderSummary({
       <div className="border-t border-white/10 pt-4">
         <div className="flex justify-between items-baseline">
           <span className="text-white/60 text-sm">
-            {plan.type === "recurring" ? "Cobrado agora" : "Total"}
+            {plan.type === "recurring"
+              ? "Cobrado agora"
+              : paymentMethod === "pix"
+              ? "Total à vista"
+              : "Total"
+            }
           </span>
           <div className="text-right">
             {couponData && plan.type === "installment" && (
               <span className="text-white/30 line-through text-sm mr-2">R$ {fmtBRL(plan.total)}</span>
             )}
             <span className="text-2xl font-light text-white">
-              R$ {fmtBRL(plan.type === "recurring" ? discountedPrice : discountedTotal)}
+              R$ {fmtBRL(
+                plan.type === "recurring"
+                  ? discountedPrice
+                  : paymentMethod === "pix"
+                  ? pixTotalValue
+                  : discountedTotal
+              )}
             </span>
           </div>
         </div>
-        {plan.type === "installment" && (
+        {plan.type === "installment" && paymentMethod === "card" && (
           <p className="text-xs text-white/40 mt-1 text-right">
             em {plan.installments}x de R$ {fmtBRL(discountedPrice)}
+          </p>
+        )}
+        {plan.type === "installment" && paymentMethod === "pix" && (
+          <p className="text-xs text-[#32bcad]/60 mt-1 text-right">
+            pagamento único via PIX
           </p>
         )}
       </div>
