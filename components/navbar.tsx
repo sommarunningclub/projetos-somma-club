@@ -48,7 +48,7 @@ export function Navbar() {
         <div className="hidden md:flex items-center justify-end gap-8 flex-1">
           <ResourcesDropdown />
           <a
-            href="https://wa.me/5561991780334?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20Assessoria%20Somma."
+            href="https://wa.me/5561995372477?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Quero%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20a%20Assessoria%20Somma"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:text-[#ff4f2d] transition-colors text-xs sm:text-sm font-light"
