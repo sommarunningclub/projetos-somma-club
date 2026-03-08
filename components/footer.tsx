@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-12">
           {/* Left: Info */}
           <div className="text-center sm:text-left">
-            <p className="text-xs sm:text-sm font-light text-white/80">© 2025 Assessoria Somma Club</p>
+            <p className="text-xs sm:text-sm font-light text-white/80">© 2026 Assessoria Somma Club</p>
             <p className="text-xs sm:text-sm font-light text-white/60 mt-2">CNPJ 61.315.987/0001-28</p>
           </div>
 
