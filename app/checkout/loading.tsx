@@ -45,35 +45,18 @@ export default function CheckoutLoading() {
           ))}
         </div>
 
-        <style jsx>{`
+        <style>{`
           @keyframes spin {
-            from {
-              transform: rotate(0deg);
-            }
-            to {
-              transform: rotate(360deg);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
           }
           @keyframes pulse {
-            0%,
-            100% {
-              opacity: 0.2;
-            }
-            50% {
-              opacity: 0.4;
-            }
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
           }
           @keyframes bounce {
-            0%,
-            80%,
-            100% {
-              transform: scale(1);
-              opacity: 0.5;
-            }
-            40% {
-              transform: scale(1.2);
-              opacity: 1;
-            }
+            0%, 80%, 100% { transform: scale(1); opacity: 0.5; }
+            40% { transform: scale(1.2); opacity: 1; }
           }
         `}</style>
       </div>
