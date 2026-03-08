@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   CreditCard,
   Loader2,
@@ -147,6 +147,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
   const [pixPayload, setPixPayload] = useState<string | null>(null)
   const [pixExpiration, setPixExpiration] = useState<string | null>(null)
   const [pixCopied, setPixCopied] = useState(false)
+  const [pixPaymentId, setPixPaymentId] = useState<string | null>(null)
 
   const baseTotalForInstallments = plan.type === "installment" ? (plan.total / plan.installments) * installments : plan.total
   const discountedPrice = couponData ? couponData.calculation.finalValue : plan.price
@@ -201,6 +202,43 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
     }
   }
 
+  // ─── PIX Payment Polling ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (pageState !== "pix" || !pixPaymentId) return
+
+    let pollInterval: NodeJS.Timeout | null = null
+
+    const checkPaymentStatus = async () => {
+      try {
+        const res = await fetch(`/api/asaas/payment-status?paymentId=${pixPaymentId}`)
+        const data = await res.json()
+
+        if (!res.ok) {
+          console.error("Erro ao verificar status:", data.error)
+          return
+        }
+
+        // Se pagamento foi confirmado, ir para tela de sucesso
+        if (data.paid) {
+          if (pollInterval) clearInterval(pollInterval)
+          setPageState("success")
+        }
+      } catch (err) {
+        console.error("Erro no polling:", err)
+      }
+    }
+
+    // Verificar imediatamente
+    checkPaymentStatus()
+
+    // Depois verificar a cada 3 segundos
+    pollInterval = setInterval(checkPaymentStatus, 3000)
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval)
+    }
+  }, [pageState, pixPaymentId])
+
   // ─── Submit ──────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -240,6 +278,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
         const pixQrData = await pixQrRes.json()
         if (!pixQrRes.ok) throw new Error(pixQrData.error || "Erro ao gerar QR Code PIX")
 
+        setPixPaymentId(paymentId)
         setPixQrCode(pixQrData.encodedImage)
         setPixPayload(pixQrData.payload)
         setPixExpiration(pixQrData.expirationDate)
