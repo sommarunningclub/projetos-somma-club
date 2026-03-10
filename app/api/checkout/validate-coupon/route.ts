@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 
 // Cupons cadastrados - edite aqui para adicionar/remover cupons
 const COUPONS: Record<string, { type: "PERCENTAGE" | "FIXED"; value: number; description: string; active: boolean }> = {
+  "SOMMA5": { type: "PERCENTAGE", value: 5, description: "5% de desconto", active: true },
   "SOMMA10": { type: "PERCENTAGE", value: 10, description: "10% de desconto", active: true },
   "SOMMA20": { type: "PERCENTAGE", value: 20, description: "20% de desconto", active: true },
   "SOMMA50": { type: "FIXED", value: 50, description: "R$ 50,00 de desconto", active: true },
