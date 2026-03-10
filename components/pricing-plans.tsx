@@ -6,7 +6,15 @@ import { KitCarousel } from "./kit-carousel"
 
 const benefits = [
   { category: "Comunidade", items: ["Presença VIP nas provas Somma", "Estrutura Somma em eventos", "Encontros mensais exclusivos", "Palestras e experiências"] },
-  { category: "Parcerias", items: ["Descontos em Tex Barbearia", "Descontos em Dopahmina", "Descontos em Academia Evolve"] },
+  {
+    category: "Parcerias",
+    items: [
+      { text: "Desconto Especial na Estamina Recovery - Recuperação Esportiva", url: "https://www.instagram.com/estaminarecovery/" },
+      { text: "Descontos em Dopahmina", url: "https://www.instagram.com/dopahmina/" },
+      { text: "Descontos em Tex Barbearia", url: "https://www.instagram.com/texbarbeariaoficial/" },
+      { text: "Descontos em Academia Evolve", url: "https://www.academiaevolve.com.br/" },
+    ],
+  },
   { category: "Exclusivos", items: ["Treinamento personalizado via app", "Integração com Strava e relógios GPS", "Acompanhamento de métricas", "Camiseta oficial de membro", "Desconto em camisetas extras"] },
 ]
 
@@ -60,7 +68,18 @@ export function PricingPlans() {
                     <div className="flex-shrink-0 mt-1">
                       <Check className="w-5 h-5 md:w-6 md:h-6 text-[#ff4f2d]" strokeWidth={1.5} />
                     </div>
-                    <span className="text-sm md:text-base font-light text-white/80">{item}</span>
+                    {typeof item === "string" ? (
+                      <span className="text-sm md:text-base font-light text-white/80">{item}</span>
+                    ) : (
+                      <Link
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm md:text-base font-light text-white/80 hover:text-[#ff4f2d] transition-colors border-b border-white/20 hover:border-[#ff4f2d]"
+                      >
+                        {item.text}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -187,7 +206,18 @@ export function PricingPlans() {
                     <div className="space-y-3">
                       {section.items.map((item, itemIdx) => (
                         <div key={`item-${itemIdx}`} className="grid grid-cols-[1fr_auto] gap-4 items-start">
-                          <span className="text-white/70 font-light">{item}</span>
+                          {typeof item === "string" ? (
+                            <span className="text-white/70 font-light">{item}</span>
+                          ) : (
+                            <Link
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white/70 font-light hover:text-[#ff4f2d] transition-colors border-b border-white/20 hover:border-[#ff4f2d]"
+                            >
+                              {item.text}
+                            </Link>
+                          )}
                           <Check className="w-4 h-4 md:w-5 md:h-5 text-[#ff4f2d] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                         </div>
                       ))}
