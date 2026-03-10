@@ -1,8 +1,10 @@
 import Link from "next/link"
 import Image from "next/image"
 
-export const metadata = {
-  title: "Política de Cookies | SOMMA Running Club",
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Política de Cookies",
   description: "Entenda como utilizamos cookies no site do SOMMA Running Club Membros.",
 }
 
