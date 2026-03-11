@@ -1028,7 +1028,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                 >
                   {Array.from({ length: plan.installments }, (_, i) => i + 1).map((n) => (
                     <option key={n} value={n} className="bg-black text-white">
-                      {n}x de R$ {fmtBRL((plan.total / plan.installments) * n / n)}
+                      {n}x de R$ {fmtBRL(plan.total / n)}
                     </option>
                   ))}
                 </select>
