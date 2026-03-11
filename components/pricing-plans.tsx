@@ -88,6 +88,85 @@ export function PricingPlans() {
         </div>
       </div>
 
+      {/* Somma Check Point */}
+      <div className="pl-6 md:pl-8 border-l-2 border-[#ff4f2d]">
+
+        <h3 className="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-12 md:mb-16">
+          Somma Check Point
+        </h3>
+
+        <div className="overflow-x-auto mb-8">
+          <table className="w-full text-sm md:text-base">
+            <thead>
+              <tr className="border-b border-[#ff4f2d]/30 bg-[#ff4f2d]/5">
+                <th className="text-left py-4 md:py-6 px-4 md:px-6 font-light text-[#ff4f2d] uppercase text-xs tracking-wider">
+                  Aspecto
+                </th>
+                <th className="text-left py-4 md:py-6 px-4 md:px-6 font-light text-[#ff4f2d] uppercase text-xs tracking-wider">
+                  Detalhes
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 md:py-6 px-4 md:px-6 font-light text-white/80 uppercase text-xs tracking-wider">
+                  🗓️ Quando
+                </td>
+                <td className="py-4 md:py-6 px-4 md:px-6 text-white/70 font-light">
+                  Todos os domingos
+                </td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 md:py-6 px-4 md:px-6 font-light text-white/80 uppercase text-xs tracking-wider">
+                  ⏰ Horário
+                </td>
+                <td className="py-4 md:py-6 px-4 md:px-6 text-white/70 font-light">
+                  De 06 às 09h da manhã, no mesmo local onde é realizado o evento do Somma aos sábados
+                </td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 md:py-6 px-4 md:px-6 font-light text-white/80 uppercase text-xs tracking-wider">
+                  🗺️ Onde
+                </td>
+                <td className="py-4 md:py-6 px-4 md:px-6 text-white/70 font-light">
+                  Parque da Cidade, em provas onde a assessoria esteja presente ou outro local previamente definido pelos treinadores
+                </td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 md:py-6 px-4 md:px-6 font-light text-white/80 uppercase text-xs tracking-wider">
+                  💪 Estrutura
+                </td>
+                <td className="py-4 md:py-6 px-4 md:px-6 text-white/70 font-light">
+                  Hidratação e estrutura de apoio para realizar seu treino com tranquilidade
+                </td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 md:py-6 px-4 md:px-6 font-light text-white/80 uppercase text-xs tracking-wider">
+                  🎯 Como Funciona
+                </td>
+                <td className="py-4 md:py-6 px-4 md:px-6 text-white/70 font-light">
+                  Treino livre sem professores conduzindo. Momento para executar sua série prescrita no seu próprio ritmo
+                </td>
+              </tr>
+              <tr className="hover:bg-white/[0.02] transition-colors">
+                <td className="py-4 md:py-6 px-4 md:px-6 font-light text-white/80 uppercase text-xs tracking-wider">
+                  🤝 Benefício Extra
+                </td>
+                <td className="py-4 md:py-6 px-4 md:px-6 text-white/70 font-light">
+                  Ótima oportunidade para socializar e treinar próximo do nosso time
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="p-6 md:p-8 bg-[#ff4f2d]/10 border border-[#ff4f2d]/30 rounded-lg">
+          <p className="text-sm md:text-base text-white/80 font-light leading-relaxed">
+            Você terá à sua disposição um espaço acolhedor com toda a estrutura necessária para treinar com segurança e aproveitar para interagir com outros atletas da assessoria. É o momento perfeito para se conectar com a comunidade Somma enquanto executa seu treino de forma autônoma.
+          </p>
+        </div>
+      </div>
+
       {/* Pricing Plans */}
       <div>
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-12 md:mb-16">
