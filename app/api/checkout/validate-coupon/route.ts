@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
 // Cupons cadastrados - edite aqui para adicionar/remover cupons
-const COUPONS: Record<string, { type: "PERCENTAGE" | "FIXED"; value: number; description: string; active: boolean }> = {
+const COUPONS: Record<string, { type: "PERCENTAGE" | "FIXED"; value: number; description: string; active: boolean; professor?: string; planType?: string }> = {
   // Cupons Originais
   "SOMMA5": { type: "PERCENTAGE", value: 5, description: "5% de desconto", active: true },
   "SOMMA10": { type: "PERCENTAGE", value: 10, description: "10% de desconto", active: true },
@@ -10,6 +10,8 @@ const COUPONS: Record<string, { type: "PERCENTAGE" | "FIXED"; value: number; des
   "PRIMEIRACOMPRA": { type: "PERCENTAGE", value: 15, description: "15% na primeira compra", active: true },
   "SOMMA99": { type: "PERCENTAGE", value: 99, description: "99% de desconto", active: true },
   "JO130": { type: "FIXED", value: 90, description: "Desconto de R$ 90,00 - Assinatura por R$ 130", active: true },
+  "ALE200": { type: "FIXED", value: 20, description: "Desconto de R$ 20,00 - Assinatura por R$ 200", active: true, professor: "Alexandre Alves", planType: "recurring" },
+  "ALE180": { type: "FIXED", value: 40, description: "Desconto de R$ 40,00 - Assinatura por R$ 180", active: true, professor: "Alexandre Alves", planType: "recurring" },
 
   // Cupons Familiares - 10%
   "ALEX10": { type: "PERCENTAGE", value: 10, description: "10% desconto - Familiares", active: true },
@@ -72,6 +74,8 @@ export async function GET(request: Request) {
     const code = searchParams.get("code")?.toUpperCase().trim()
     const valueParam = searchParams.get("value")
     const value = valueParam ? parseFloat(valueParam) : 0
+    const professor = searchParams.get("professor")?.trim() || ""
+    const planType = searchParams.get("planType")?.trim() || ""
 
     if (!code) {
       return NextResponse.json(
@@ -99,6 +103,20 @@ export async function GET(request: Request) {
     if (!coupon.active) {
       return NextResponse.json(
         { valid: false, error: "Cupom expirado ou inativo" },
+        { status: 400 }
+      )
+    }
+
+    if (coupon.professor && coupon.professor !== professor) {
+      return NextResponse.json(
+        { valid: false, error: `Cupom válido apenas para o professor ${coupon.professor}` },
+        { status: 400 }
+      )
+    }
+
+    if (coupon.planType && coupon.planType !== planType) {
+      return NextResponse.json(
+        { valid: false, error: "Cupom válido apenas para o plano mensal" },
         { status: 400 }
       )
     }

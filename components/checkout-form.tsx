@@ -191,7 +191,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
     setIsCouponLoading(true)
     setCouponError(null)
     try {
-      const res = await fetch(`/api/checkout/validate-coupon?code=${encodeURIComponent(couponCode)}&value=${plan.price}`)
+      const res = await fetch(`/api/checkout/validate-coupon?code=${encodeURIComponent(couponCode)}&value=${plan.price}&professor=${encodeURIComponent(professor)}&planType=${encodeURIComponent(plan.type)}`)
       const data = await res.json()
       if (!data.valid) { setCouponError(data.error || "Cupom invalido"); setCouponData(null); return }
       setCouponData(data)
