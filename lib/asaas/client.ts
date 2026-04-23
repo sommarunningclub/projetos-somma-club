@@ -1,4 +1,11 @@
-const ASAAS_API_URL = process.env.ASAAS_BASE_URL || "https://api.asaas.com/v3"
+// ASAAS_BASE_URL pode vir com/sem barra final, com/sem /v3
+// Normalizamos para sempre ter /v3 sem barra final.
+function normalizeAsaasUrl(raw: string | undefined): string {
+  const base = (raw || "https://api.asaas.com/v3").replace(/\/+$/, "")
+  return base.endsWith("/v3") ? base : `${base}/v3`
+}
+
+const ASAAS_API_URL = normalizeAsaasUrl(process.env.ASAAS_BASE_URL)
 const ASAAS_API_KEY = process.env.ASAAS_API_KEY
 
 export type AsaasPaymentStatus =
