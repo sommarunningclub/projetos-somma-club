@@ -110,14 +110,14 @@ export async function GET(request: Request) {
 
     if (coupon.professor && coupon.professor !== professor) {
       return NextResponse.json(
-        { valid: false, error: `Cupom válido apenas para o professor ${coupon.professor}` },
+        { valid: false, error: "Cupom inválido" },
         { status: 400 }
       )
     }
 
     if (coupon.planType && coupon.planType !== planType) {
       return NextResponse.json(
-        { valid: false, error: "Cupom válido apenas para o plano mensal" },
+        { valid: false, error: "Cupom inválido" },
         { status: 400 }
       )
     }
