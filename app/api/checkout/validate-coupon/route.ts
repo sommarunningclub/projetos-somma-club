@@ -10,6 +10,7 @@ const COUPONS: Record<string, { type: "PERCENTAGE" | "FIXED"; value: number; des
   "PRIMEIRACOMPRA": { type: "PERCENTAGE", value: 15, description: "15% na primeira compra", active: false },
   "SOMMA99": { type: "PERCENTAGE", value: 99, description: "99% de desconto", active: false },
   "JO130": { type: "FIXED", value: 90, description: "Desconto de R$ 90,00 - Assinatura por R$ 130", active: true },
+  "JO150": { type: "FIXED", value: 70, description: "Desconto de R$ 70,00 - Assinatura por R$ 150", active: true, professor: "Joseph Pereira", planType: "recurring" },
   "ALE200": { type: "FIXED", value: 20, description: "Desconto de R$ 20,00 - Assinatura por R$ 200", active: true, professor: "Alexandre Alves", planType: "recurring" },
   "ALE180": { type: "FIXED", value: 40, description: "Desconto de R$ 40,00 - Assinatura por R$ 180", active: true, professor: "Alexandre Alves", planType: "recurring" },
 
