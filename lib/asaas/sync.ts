@@ -95,7 +95,11 @@ export async function syncAsaasToSupabase(): Promise<SyncResult> {
       // Mesmo sem cobranças válidas, o customer existe — manter dado básico
       const planos = payments.map(inferPlanFromPayment).filter(p => p !== "Avulso")
       const planoFinal = mode(planos) ?? "Avulso"
-      const professor = payments.map(p => extractProfessor(p.description)).find(Boolean) ?? null
+      // Professor = grupo de clientes do Asaas (fonte de verdade após organização manual);
+      // fallback para extração da descrição das cobranças.
+      const professor =
+        customer.groups?.[0]?.name ??
+        (payments.map(p => extractProfessor(p.description)).find(Boolean) ?? null)
       const camiseta = payments.map(p => extractCamiseta(p.description)).find(Boolean) ?? null
       const cupom = payments.map(p => extractCupom(p.description)).find(Boolean) ?? null
 
