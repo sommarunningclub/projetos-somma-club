@@ -5,7 +5,7 @@ import { Loader2, Download, Filter } from "lucide-react"
 import { toCSV } from "@/lib/relatorios/csv"
 
 type Tipo = "carteira" | "repasse"
-type Visao = "sintetico" | "analitico"
+type Visao = "sintetico" | "analitico" | "extrato"
 
 interface ApiResponse {
   tipo: Tipo
@@ -63,10 +63,22 @@ export function RelatorioView({ tipo }: { tipo: Tipo }) {
     return () => ctrl.abort()
   }, [de, ate, agrupar, professor, plano, forma, tipo])
 
-  const rows = visao === "sintetico" ? data?.sintetico ?? [] : data?.analitico ?? []
+  const rows: any[] = visao === "sintetico" ? data?.sintetico ?? [] : data?.analitico ?? []
   const colSpan = tipo === "carteira"
     ? (visao === "sintetico" ? 3 : 7)
     : (visao === "sintetico" ? 5 : 7)
+
+  // Extrato de PIX por professor (agrupa o analítico do repasse)
+  const extrato = useMemo(() => {
+    if (tipo !== "repasse") return []
+    const map = new Map<string, { professor: string; itens: any[]; bruto: number; taxa: number; repasse: number }>()
+    for (const r of ((data?.analitico ?? []) as any[])) {
+      const g = map.get(r.professor) ?? { professor: r.professor, itens: [] as any[], bruto: 0, taxa: 0, repasse: 0 }
+      g.itens.push(r); g.bruto += Number(r.bruto ?? 0); g.taxa += Number(r.taxa ?? 0); g.repasse += Number(r.repasse ?? 0)
+      map.set(r.professor, g)
+    }
+    return [...map.values()].sort((a, b) => b.repasse - a.repasse)
+  }, [data, tipo])
 
   function exportarCSV() {
     if (!rows.length) return
@@ -146,12 +158,12 @@ export function RelatorioView({ tipo }: { tipo: Tipo }) {
         </button>
       </div>
 
-      {/* Toggle sintético/analítico */}
+      {/* Toggle de visão */}
       <div className="flex items-center gap-2">
-        {(["sintetico", "analitico"] as Visao[]).map(v => (
+        {((tipo === "repasse" ? ["sintetico", "analitico", "extrato"] : ["sintetico", "analitico"]) as Visao[]).map(v => (
           <button key={v} onClick={() => setVisao(v)}
             className={`px-3 py-1.5 rounded-md text-sm border ${visao === v ? "bg-[#ff2c03] border-[#ff2c03] text-white" : "bg-zinc-900 border-zinc-800 text-white/60 hover:text-white"}`}>
-            {v === "sintetico" ? "Sintético" : "Analítico"}
+            {v === "sintetico" ? "Sintético" : v === "analitico" ? "Analítico" : "Extrato (PIX)"}
           </button>
         ))}
         {loading && <Loader2 className="w-4 h-4 animate-spin text-white/40 ml-2" />}
@@ -159,7 +171,62 @@ export function RelatorioView({ tipo }: { tipo: Tipo }) {
 
       {erro && <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md p-3">{erro}</div>}
 
-      {/* Tabela */}
+      {/* Extrato de PIX por professor */}
+      {tipo === "repasse" && visao === "extrato" && (
+        <div className="space-y-4">
+          {!loading && extrato.length === 0 && (
+            <div className="bg-zinc-950 border border-zinc-900 rounded-lg p-8 text-center text-white/40">Nenhum recebimento no período/filtros.</div>
+          )}
+          {extrato.map(g => (
+            <div key={g.professor} className="bg-zinc-950 border border-zinc-900 rounded-lg overflow-hidden">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-zinc-900 bg-zinc-900/30">
+                <div>
+                  <p className="text-[11px] text-white/50 uppercase tracking-wider">PIX a fazer para</p>
+                  <p className="text-base font-semibold text-white">{g.professor}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[11px] text-white/50 uppercase tracking-wider">Valor do PIX</p>
+                  <p className="text-2xl font-bold text-emerald-400 tabular-nums">{fmtBRL(g.repasse)}</p>
+                  <p className="text-[11px] text-white/40 mt-0.5">{g.itens.length} cobr. · bruto {fmtBRL(g.bruto)} − taxa {fmtBRL(g.taxa)}</p>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-zinc-900 text-white/50 text-left">
+                      <th className="p-3">Aluno</th><th className="p-3">Plano</th><th className="p-3">Crédito</th>
+                      <th className="p-3 text-right">Bruto</th><th className="p-3 text-right">Taxa Somma</th><th className="p-3 text-right">Repasse</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {g.itens.map((r, i) => (
+                      <tr key={i} className="border-b border-zinc-900/50 hover:bg-zinc-900/30">
+                        <td className="p-3 text-white">{r.aluno ?? "—"}</td>
+                        <td className="p-3 text-white/70">{r.plano ?? "—"}</td>
+                        <td className="p-3 text-white/70">{fmtDate(r.credit_date)}</td>
+                        <td className="p-3 text-right text-white/70 tabular-nums">{fmtBRL(r.bruto)}</td>
+                        <td className="p-3 text-right text-amber-400 tabular-nums">{r.taxa > 0 ? `− ${fmtBRL(r.taxa)}` : fmtBRL(0)}</td>
+                        <td className="p-3 text-right text-emerald-400 tabular-nums">{fmtBRL(r.repasse)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-zinc-800 font-semibold">
+                      <td className="p-3 text-white" colSpan={3}>Total a repassar (PIX)</td>
+                      <td className="p-3 text-right text-white/70 tabular-nums">{fmtBRL(g.bruto)}</td>
+                      <td className="p-3 text-right text-amber-400 tabular-nums">{fmtBRL(g.taxa)}</td>
+                      <td className="p-3 text-right text-emerald-400 tabular-nums">{fmtBRL(g.repasse)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Tabela (sintético/analítico) */}
+      {visao !== "extrato" && (
       <div className="bg-zinc-950 border border-zinc-900 rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -243,6 +310,7 @@ export function RelatorioView({ tipo }: { tipo: Tipo }) {
           )}
         </table>
       </div>
+      )}
     </div>
   )
 }
