@@ -28,3 +28,7 @@ env.txt
 next-env.d.ts
 
 .DS_Store
+
+# Planilhas com dados de clientes (não versionar)
+*.csv
+Gest*o de Pagamento*

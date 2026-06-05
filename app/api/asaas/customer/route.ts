@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { resolveGroupName } from "@/lib/asaas/groups"
 
 const ASAAS_API_URL = "https://api.asaas.com/v3"
 const ASAAS_API_KEY = process.env.ASAAS_API_KEY
@@ -6,7 +7,10 @@ const ASAAS_API_KEY = process.env.ASAAS_API_KEY
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, cpfCnpj, phone, postalCode, addressNumber } = body
+    const { name, email, cpfCnpj, phone, postalCode, addressNumber, professor } = body
+
+    // Vincula o cliente ao grupo do professor escolhido (se reconhecido)
+    const groupName = resolveGroupName(professor)
 
     // Criar cliente no Asaas
     const response = await fetch(`${ASAAS_API_URL}/customers`, {
@@ -22,6 +26,7 @@ export async function POST(request: NextRequest) {
         phone: phone?.replace(/\D/g, ""),
         postalCode: postalCode?.replace(/\D/g, ""),
         addressNumber,
+        ...(groupName && { groupName }),
         notificationDisabled: false,
       }),
     })

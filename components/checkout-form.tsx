@@ -251,7 +251,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
       const customerRes = await fetch("/api/asaas/customer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(customerData),
+        body: JSON.stringify({ ...customerData, professor }),
       })
       const customerResult = await customerRes.json()
       if (!customerRes.ok) throw new Error(customerResult.error || "Erro ao salvar dados")
@@ -446,7 +446,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                 R$ {fmtBRL(pixTotalValue)}
               </p>
               <p className="text-xs text-white/40">
-                Plano {plan.name} — pagamento à vista
+                Plano {plan.name} · pagamento à vista
               </p>
               {formattedExpiration && (
                 <p className="text-xs text-white/30">
@@ -905,7 +905,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                       <Check className="w-3 h-3" /> Endereco encontrado
                     </p>
                     <p className="text-sm text-white/70">
-                      {customerData.street}, {customerData.neighborhood} — {customerData.city}/{customerData.state}
+                      {customerData.street}, {customerData.neighborhood} · {customerData.city}/{customerData.state}
                     </p>
                   </div>
                 )}
@@ -947,7 +947,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                 {paymentMethod === "pix" && (
                   <div className="mt-3 p-3 bg-[#32bcad]/5 border border-[#32bcad]/20 rounded-lg">
                     <p className="text-xs text-[#32bcad]">
-                      Pagamento único de R$ {fmtBRL(pixTotalValue)} — sem parcelamento
+                      Pagamento único de R$ {fmtBRL(pixTotalValue)} · sem parcelamento
                     </p>
                   </div>
                 )}
@@ -1045,7 +1045,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-green-400" />
                     <span className="text-sm text-green-400 font-medium">{couponData.coupon.code}</span>
-                    <span className="text-xs text-white/40">— {couponData.coupon.description}</span>
+                    <span className="text-xs text-white/40">· {couponData.coupon.description}</span>
                   </div>
                   <button
                     type="button"
@@ -1119,7 +1119,7 @@ export function CheckoutForm({ plan, initialProfessors }: CheckoutFormProps) {
               ) : paymentMethod === "pix" && plan.type === "installment" ? (
                 <>
                   <QrCode className="w-4 h-4" />
-                  Pagar via PIX — R$ {fmtBRL(pixTotalValue)}
+                  Pagar via PIX · R$ {fmtBRL(pixTotalValue)}
                 </>
               ) : plan.type === "recurring" ? (
                 <>
@@ -1189,12 +1189,12 @@ function OrderSummary({
     <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 space-y-5">
       <div>
         <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Resumo</p>
-        <h3 className="text-white font-medium text-base">Somma Assessoria — Plano {plan.name}</h3>
+        <h3 className="text-white font-medium text-base">Somma Assessoria · Plano {plan.name}</h3>
         <p className="text-white/50 text-sm mt-0.5">
           {plan.type === "recurring"
             ? "Cobranca mensal recorrente"
             : paymentMethod === "pix"
-            ? "PIX à vista — pagamento único"
+            ? "PIX à vista · pagamento único"
             : `${plan.installments}x de R$ ${fmtBRL(plan.price)} sem juros`
           }
         </p>
