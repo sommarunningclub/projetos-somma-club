@@ -31,6 +31,7 @@ export interface AsaasCustomer {
   externalReference?: string
   dateCreated?: string
   deleted?: boolean
+  groups?: { name: string }[]
 }
 
 export interface AsaasPayment {

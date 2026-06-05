@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Home, Users, CreditCard, AlertTriangle,
+  Wallet, ArrowLeftRight, Settings,
   LogOut, ChevronLeft, ChevronRight, Menu,
 } from "lucide-react"
 
@@ -14,10 +14,9 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { href: "/admin",           icon: Home,          label: "Dashboard" },
-  { href: "/admin/alunos",    icon: Users,         label: "Alunos" },
-  { href: "/admin/cobrancas", icon: CreditCard,    label: "Cobranças" },
-  { href: "/admin/alertas",   icon: AlertTriangle, label: "Alertas" },
+  { href: "/admin/relatorios/carteira", icon: Wallet,         label: "Carteira" },
+  { href: "/admin/relatorios/repasse",  icon: ArrowLeftRight, label: "Repasse" },
+  { href: "/admin/relatorios/config",   icon: Settings,       label: "Configurações" },
 ]
 
 export function Sidebar({ email, logoutAction }: SidebarProps) {
