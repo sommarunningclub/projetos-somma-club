@@ -86,7 +86,7 @@ export async function GET() {
         status: a.status_pagamento,
         acaoRecomendada:
           Number(a.total_vencido ?? 0) > 0
-            ? "CONTATO URGENTE — Suspender acesso"
+            ? "CONTATO URGENTE · Suspender acesso"
             : "Cobrar via WhatsApp",
       }))
 

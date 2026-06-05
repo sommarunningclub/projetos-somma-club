@@ -177,7 +177,7 @@ export default async function AlunoDetailPage({ params }: { params: Promise<{ id
               label="Endereço"
               value={
                 aluno.address
-                  ? `${aluno.address as string}${aluno.address_number ? `, ${aluno.address_number}` : ""}${aluno.city ? ` — ${aluno.city}/${aluno.state}` : ""}`
+                  ? `${aluno.address as string}${aluno.address_number ? `, ${aluno.address_number}` : ""}${aluno.city ? ` · ${aluno.city}/${aluno.state}` : ""}`
                   : null
               }
             />

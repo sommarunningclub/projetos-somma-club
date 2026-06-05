@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { PricingPlans } from "@/components/pricing-plans"
 import { Navbar } from "@/components/navbar"
+import { FAQSection } from "@/components/faq-section"
 import Link from "next/link"
 
 export default function Home() {
@@ -21,21 +22,21 @@ export default function Home() {
                 <p className="text-xs sm:text-sm font-light text-white/60">ASSESSORIA SOMMA CLUB</p>
               </div>
               <div className="flex-1 text-right">
-                <p className="text-xs sm:text-sm font-light text-white/60 mb-2">50+ ATLETAS</p>
-                <p className="text-xs sm:text-sm font-light text-white/60">ASSESSORADOS</p>
+                <p className="text-xs sm:text-sm font-light text-white/60 mb-2">MAIOR RUNNING CLUB DO DF</p>
+                <p className="text-xs sm:text-sm font-light text-white/60">+5.000 MEMBROS</p>
               </div>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1] mb-6 text-balance">
-              Treinamento
+              Assessoria de Corrida
               <br />
-              <span className="text-[#ff4f2d]">Inteligente</span>
+              <span className="text-[#ff4f2d]">em Brasília</span>
             </h1>
 
             {/* Subheading */}
             <p className="text-sm sm:text-base md:text-lg text-white/70 mb-12 max-w-xl leading-relaxed">
-              Planejamento profissional, acompanhamento personalizado e resultados comprovados. Para corredores que buscam evoluir com propósito.
+              O braço técnico do Somma Running Club, maior comunidade de corrida do Distrito Federal, com mais de 5 mil membros. Treinamento personalizado, acompanhamento via Strava e planejamento individualizado para corredores que querem evoluir com método.
             </p>
 
             {/* CTA Links */}
@@ -64,8 +65,9 @@ export default function Home() {
             {/* Left: Stats */}
             <div className="flex items-center">
               <div>
-                <div className="text-6xl sm:text-7xl md:text-8xl font-light text-[#ff4f2d] mb-4">50+</div>
-                <p className="text-xs sm:text-sm font-light text-white/60">ATLETAS ASSESSORADOS</p>
+                <div className="text-6xl sm:text-7xl md:text-8xl font-light text-[#ff4f2d] mb-4">5K+</div>
+                <p className="text-xs sm:text-sm font-light text-white/60">MEMBROS NO SOMMA CLUB</p>
+                <p className="text-xs sm:text-sm font-light text-white/40 mt-2">Maior running club do DF</p>
               </div>
             </div>
 
@@ -77,10 +79,10 @@ export default function Home() {
               </h3>
               <div className="space-y-6 text-sm sm:text-base text-white/70 leading-relaxed">
                 <p>
-                  O Somma Running Club é mais do que um grupo de corrida. Somos um movimento que mistura esporte, comunidade, estilo de vida e pertencimento. Fundado em Brasília, conectamos corredores de todos os níveis em torno de um objetivo comum: transformar a corrida em uma experiência coletiva.
+                  O Somma Running Club é o maior running club do Distrito Federal: uma comunidade gratuita, democrática e aberta, com mais de 5 mil membros cadastrados em Brasília. Mais do que um grupo de corrida, é um movimento que une esporte, pertencimento, amizade e estilo de vida ativo na cidade.
                 </p>
                 <p>
-                  Nossa estrutura funciona em dois níveis: o Running Club, que representa a comunidade ampla; e a Assessoria Somma, que oferece acompanhamento técnico profissional para quem deseja evoluir.
+                  A <strong className="text-white font-light">Assessoria Somma</strong> é o braço técnico desse movimento: acompanhamento profissional, planejamento individualizado e metodologia baseada em ciência para quem quer evoluir na corrida com método, do iniciante ao corredor experiente.
                 </p>
               </div>
             </div>
@@ -222,6 +224,11 @@ export default function Home() {
             <PricingPlans />
           </div>
         </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="border-t border-white/10">
+        <FAQSection />
       </section>
     </main>
   )

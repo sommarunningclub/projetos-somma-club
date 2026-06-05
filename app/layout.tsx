@@ -23,11 +23,21 @@ const jsonLd = [
     "@context": "https://schema.org",
     "@type": "SportsActivityLocation",
     name: "Assessoria Somma Club",
-    alternateName: "SOMMA Running Club",
+    alternateName: "Assessoria Somma · SOMMA Running Club",
     url: "https://assessoria.sommaclub.com.br",
     logo: "https://assessoria.sommaclub.com.br/apple-icon.png",
     image: "https://assessoria.sommaclub.com.br/apple-icon.png",
-    description: "Assessoria esportiva de corrida em Brasília DF com treinamento personalizado, acompanhamento via Strava e comunidade de corredores.",
+    description: "Assessoria esportiva de corrida em Brasília DF, braço técnico do Somma Running Club, o maior running club do Distrito Federal, com mais de 5 mil membros. Treinamento personalizado, acompanhamento via Strava e planejamento individualizado.",
+    parentOrganization: {
+      "@type": "SportsOrganization",
+      name: "Somma Running Club",
+      url: "https://sommaclub.com.br",
+      description: "Maior running club do Distrito Federal: comunidade gratuita de corrida, wellness e conexão social em Brasília, com mais de 5 mil membros cadastrados.",
+      sameAs: [
+        "https://www.instagram.com/somma.club/",
+        "https://www.strava.com/clubs/1608501",
+      ],
+    },
     address: {
       "@type": "PostalAddress",
       addressLocality: "Brasília",
@@ -84,7 +94,7 @@ const jsonLd = [
     "@type": "WebSite",
     name: "Assessoria Somma Club",
     url: "https://assessoria.sommaclub.com.br",
-    description: "Site oficial da Assessoria Somma Club — treinamento de corrida em Brasília DF.",
+    description: "Site oficial da Assessoria Somma Club: treinamento de corrida em Brasília DF.",
     inLanguage: "pt-BR",
     publisher: {
       "@type": "Organization",
@@ -110,6 +120,84 @@ const jsonLd = [
       "query-input": "required name=search_term_string",
     },
   },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "O que é a Assessoria Somma Club?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "A Assessoria Somma é o braço técnico do Somma Running Club, maior running club do Distrito Federal, com mais de 5 mil membros. Oferece treinamento de corrida personalizado em Brasília, com planejamento individualizado, acompanhamento via Strava e metodologia baseada em ciência, para corredores iniciantes e experientes.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "A Assessoria Somma é em Brasília?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sim. A Assessoria Somma atua em Brasília, Distrito Federal, e está ligada ao Somma Running Club, comunidade gratuita de corrida com mais de 5 mil membros no DF. O acompanhamento é digital, com treinos disponibilizados via aplicativo.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Quanto tempo dura a Assessoria? Tem fidelidade?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "A Assessoria Somma tem a duração do plano escolhido: mensal, semestral ou anual. Não há fidelidade, você permanece pelo tempo que fizer sentido para seus objetivos.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Como funciona o planejamento de treinos?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Após a confirmação da assinatura, você recebe acesso ao aplicativo de treinamento, onde seu plano personalizado é disponibilizado semanalmente. O planejamento considera seu nível atual, objetivos e disponibilidade, com ajustes conforme sua evolução.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Quais são as formas de pagamento? É seguro?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Aceitamos pagamentos via Cartão de Crédito, com parcelamento nos planos semestrais e anuais. O processo é protegido e seguro, garantindo proteção total dos seus dados.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Como funciona a garantia e o cancelamento?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Ao assinar, você tem 7 dias de garantia incondicional para cancelar e receber reembolso total. Após esse período, pode cancelar a qualquer momento e seu acesso continua ativo até o fim do período já pago.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "A assinatura renova automaticamente?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sim. A renovação é automática ao final do período contratado para garantir continuidade no treinamento. Caso não deseje renovar, basta cancelar antes da data de renovação.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Preciso ser corredor experiente para entrar na Assessoria Somma?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Não. A Assessoria Somma atende corredores iniciantes, intermediários e experientes. O plano é individualizado e respeita seu ponto de partida, com evolução progressiva e segura.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Preciso de equipamentos especiais?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Recomendamos um relógio GPS ou smartphone com app de corrida (como Strava) para registro dos treinos. Isso permite acompanhamento preciso de métricas e ajustes mais eficientes no planejamento.",
+        },
+      },
+    ],
+  },
 ]
 
 export const metadata: Metadata = {
@@ -121,7 +209,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Assessoria esportiva de corrida em Brasília DF. Treinamento personalizado, acompanhamento com Strava, planejamento individualizado e comunidade SOMMA Running Club. Planos a partir de R$ 180/mês.",
+    "Assessoria de corrida em Brasília DF, braço técnico do Somma Running Club, maior running club do Distrito Federal, com mais de 5 mil membros. Treinamento personalizado, acompanhamento via Strava e planejamento individualizado. Planos a partir de R$ 180/mês.",
 
   keywords: [
     "assessoria esportiva Brasília",
@@ -156,10 +244,12 @@ export const metadata: Metadata = {
 
   icons: {
     icon: [
-      { url: "/fav_icon_somma.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/icon-light-32x32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon.ico",
   },
 
   openGraph: {
@@ -175,7 +265,7 @@ export const metadata: Metadata = {
         url: "/apple-icon.png",
         width: 180,
         height: 180,
-        alt: "Assessoria Somma Club — SOMMA Running Club Brasília",
+        alt: "Assessoria Somma Club · SOMMA Running Club Brasília",
       },
     ],
   },
