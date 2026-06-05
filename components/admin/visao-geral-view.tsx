@@ -37,6 +37,7 @@ function Kpi({ label, value, accent }: { label: string; value: string; accent?: 
 
 export function VisaoGeralView() {
   const [mes, setMes] = useState(mesAtual())
+  const [professor, setProfessor] = useState("")
   const [data, setData] = useState<any | null>(null)
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -44,12 +45,15 @@ export function VisaoGeralView() {
   useEffect(() => {
     const ctrl = new AbortController()
     setLoading(true); setErro(null)
-    fetch(`/api/admin/visao-geral?mes=${mes}`, { cache: "no-store", signal: ctrl.signal })
+    const qs = new URLSearchParams({ mes, professor })
+    fetch(`/api/admin/visao-geral?${qs}`, { cache: "no-store", signal: ctrl.signal })
       .then(async r => { const j = await r.json(); if (!r.ok) throw new Error(j.error || "Erro"); setData(j) })
       .catch((e: any) => { if (e.name !== "AbortError") setErro(e.message) })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false) })
     return () => ctrl.abort()
-  }, [mes])
+  }, [mes, professor])
+
+  const professoresDisponiveis: string[] = data?.professoresDisponiveis ?? []
 
   const profs: ProfResumo[] = data?.professores ?? []
   const t = data?.totais
@@ -79,11 +83,21 @@ export function VisaoGeralView() {
 
   return (
     <div className="space-y-6">
-      {/* Seletor de mês */}
-      <div className="flex items-center gap-3">
-        <label className="text-[11px] text-white/50 uppercase tracking-wider">Mês de referência</label>
-        <input type="month" value={mes} onChange={e => setMes(e.target.value)} className={inputCls} />
-        {loading && <Loader2 className="w-4 h-4 animate-spin text-white/40" />}
+      {/* Filtros */}
+      <div className="flex flex-wrap items-end gap-3 bg-zinc-950 border border-zinc-900 rounded-lg p-4">
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] text-white/50 uppercase tracking-wider">Mês de referência</label>
+          <input type="month" value={mes} onChange={e => setMes(e.target.value)} className={inputCls} />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] text-white/50 uppercase tracking-wider">Professor</label>
+          <select value={professor} onChange={e => setProfessor(e.target.value)} className={inputCls}>
+            <option value="">Todos</option>
+            {professoresDisponiveis.map(p => <option key={p} value={p}>{p}</option>)}
+            <option value="Sem professor">Sem professor</option>
+          </select>
+        </div>
+        {loading && <Loader2 className="w-4 h-4 animate-spin text-white/40 self-center" />}
       </div>
 
       {erro && <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md p-3">{erro}</div>}

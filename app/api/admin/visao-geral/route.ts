@@ -52,12 +52,35 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const doMes = filtrarMes(rows, mes)
+    const fProfessor = request.nextUrl.searchParams.get("professor") ?? ""
+
+    // Professores conhecidos (grupos) — para o filtro e para exibir mesmo sem movimento
+    const conhecidos = [...new Set((clientes ?? []).map(c => c.professor?.trim()).filter(Boolean))].sort() as string[]
+
+    let doMes = filtrarMes(rows, mes)
+    if (fProfessor) doMes = doMes.filter(r => (r.professor?.trim() || "Sem professor") === fProfessor)
+
     const cfg = await loadRepasseConfig(supabase)
     const resumo = resumoPorProfessor(doMes, cfg)
+
+    // Garante que todo professor conhecido apareça (zerado) quando não filtrando
+    if (!fProfessor) {
+      const presentes = new Set(resumo.professores.map(p => p.professor))
+      for (const nome of conhecidos) {
+        if (!presentes.has(nome)) {
+          resumo.professores.push({
+            professor: nome, alunos: 0, cobrancas: 0, recebido: 0, aReceber: 0, vencido: 0,
+            previsaoTotal: 0, taxaUnitaria: cfg.professores[nome]?.isento ? 0 : (cfg.professores[nome]?.taxa ?? cfg.taxaPadrao),
+            taxaTotal: 0, repassePrevisto: 0,
+          })
+        }
+      }
+      resumo.professores.sort((a, b) => b.previsaoTotal - a.previsaoTotal || a.professor.localeCompare(b.professor))
+    }
+
     const agenda = agendaReceber(doMes)
 
-    return NextResponse.json({ mes, ...resumo, agenda })
+    return NextResponse.json({ mes, ...resumo, agenda, professoresDisponiveis: conhecidos })
   } catch (err) {
     console.error("[visao-geral] erro:", err)
     return NextResponse.json({ error: "Erro ao gerar visão geral" }, { status: 500 })

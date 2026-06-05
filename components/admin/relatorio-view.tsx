@@ -249,13 +249,18 @@ export function RelatorioView({ tipo }: { tipo: Tipo }) {
             {!loading && rows.length === 0 && (
               <tr><td colSpan={colSpan} className="text-center text-white/40 py-10">Nenhum recebimento no período/filtros.</td></tr>
             )}
-            {tipo === "carteira" && visao === "sintetico" && rows.map((r, i) => (
-              <tr key={i} className="border-b border-zinc-900/50 hover:bg-zinc-900/30">
-                <td className="p-3 text-white">{r.grupo}</td>
+            {tipo === "carteira" && visao === "sintetico" && rows.map((r, i) => {
+              const clicavel = agrupar === "professor"
+              return (
+              <tr key={i}
+                onClick={clicavel ? () => { setProfessor(r.grupo); setVisao("analitico") } : undefined}
+                className={`border-b border-zinc-900/50 hover:bg-zinc-900/30 ${clicavel ? "cursor-pointer" : ""}`}
+                title={clicavel ? "Ver alunos deste professor" : undefined}>
+                <td className="p-3 text-white">{r.grupo}{clicavel && <span className="text-white/30 ml-2 text-xs">→ ver alunos</span>}</td>
                 <td className="p-3 text-right text-white/70 tabular-nums">{r.qtd}</td>
                 <td className="p-3 text-right text-emerald-400 tabular-nums">{fmtBRL(r.total)}</td>
               </tr>
-            ))}
+            )})}
             {tipo === "carteira" && visao === "analitico" && rows.map((r, i) => (
               <tr key={i} className="border-b border-zinc-900/50 hover:bg-zinc-900/30">
                 <td className="p-3 text-white">{r.aluno ?? "—"}</td>
